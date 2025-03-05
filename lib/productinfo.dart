@@ -191,7 +191,7 @@ class ProductDetailsScreen extends StatelessWidget {
         color: Colors.white,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.pinkAccent,
+              backgroundColor: const Color.fromRGBO(0, 105, 95, 1),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               padding: EdgeInsets.symmetric(vertical: 15)),
