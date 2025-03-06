@@ -64,12 +64,15 @@ class ProductDetailsScreen extends StatelessWidget {
             Text("Description",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
-            Text(product["description"]!, style: TextStyle(color: Colors.grey)),
+            Text(product["description"]!,
+                textAlign: TextAlign.justify,
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 15),
             Text("Category",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
-            Text(product["category"]!, style: TextStyle(color: Colors.black)),
+            Text(product["category"]!,
+                style: TextStyle(color: const Color.fromRGBO(0, 150, 136, 1))),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,6 +210,4 @@ class ProductDetailsScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Helper function for review bars
 }

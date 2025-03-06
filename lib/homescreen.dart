@@ -81,7 +81,6 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.pinkAccent,
         elevation: 0,
-        leading: Icon(Icons.chat, color: Colors.black),
         actions: [
           Icon(Icons.notifications_none, color: Colors.black),
           SizedBox(width: 15),
