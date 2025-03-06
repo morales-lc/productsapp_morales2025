@@ -1,7 +1,70 @@
 import 'package:flutter/material.dart';
+import 'productinfo.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final List<Map<String, String>> products = [
+    {
+      "image": "assets/product.jpg",
+      "name": "Wireless Headphones",
+      "description": "Noise-canceling Bluetooth",
+      "price": "\$99",
+      "category": "Electronics"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "Smartwatch",
+      "description": "Health tracker & notifications",
+      "price": "\$79",
+      "category": "Wearables"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "Gaming Mouse",
+      "description": "Ergonomic with RGB lights",
+      "price": "\$120",
+      "category": "Accessories"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "Portable Speaker",
+      "description": "Waterproof & powerful sound",
+      "price": "\$45",
+      "category": "Audio"
+    },
+  ];
+
+  final List<Map<String, String>> bestSellers = [
+    {
+      "image": "assets/product.jpg",
+      "name": "Mechanical Keyboard",
+      "description": "RGB backlit & responsive keys",
+      "price": "\$150",
+      "category": "Accessories"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "Noise Cancelling Earbuds",
+      "description": "High-quality audio & mic",
+      "price": "\$130",
+      "category": "Audio"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "External SSD",
+      "description": "Fast 1TB storage",
+      "price": "\$95",
+      "category": "Storage"
+    },
+    {
+      "image": "assets/product.jpg",
+      "name": "Fitness Tracker",
+      "description": "Monitors steps & heart rate",
+      "price": "\$110",
+      "category": "Wearables"
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,70 +98,80 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 20),
 
               // Products Section
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: 10), // Add space around the section
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Products",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 200,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          ProductItem(),
-                          SizedBox(width: 10), // Space between items
-                          ProductItem(),
-                          SizedBox(width: 10),
-                          ProductItem(),
-                          SizedBox(width: 10),
-                          ProductItem(),
-                        ],
+              Text("Products",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsScreen(
+                                  product: products[index]),
+                            ),
+                          );
+                        },
+                        child: ProductItem(
+                          imagePath: products[index]["image"]!,
+                          name: products[index]["name"]!,
+                          description: products[index]["description"]!,
+                          price: products[index]["price"]!,
+                        ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
 
               SizedBox(height: 20),
 
               // Best Seller Section
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Best Seller",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text("See all >",
-                            style: TextStyle(color: Colors.blue, fontSize: 14)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 200,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          ProductItem(),
-                          SizedBox(width: 10),
-                          ProductItem(),
-                          SizedBox(width: 10),
-                          ProductItem(),
-                          SizedBox(width: 10),
-                          ProductItem(),
-                        ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Best Seller",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text("See all >",
+                      style: TextStyle(color: Colors.blue, fontSize: 14)),
+                ],
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: bestSellers.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsScreen(
+                                  product: bestSellers[index]),
+                            ),
+                          );
+                        },
+                        child: ProductItem(
+                          imagePath: bestSellers[index]["image"]!,
+                          name: bestSellers[index]["name"]!,
+                          description: bestSellers[index]["description"]!,
+                          price: bestSellers[index]["price"]!,
+                        ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
 
@@ -138,7 +211,7 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 20),
 
               // Recommended Products Section
-// Recommended Products Section
+              // Recommended Products Section
               Text("Recommended for you",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
@@ -185,20 +258,39 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+//class for product item lists
 class ProductItem extends StatelessWidget {
-  const ProductItem({super.key});
+  final String imagePath;
+  final String name;
+  final String description;
+  final String price;
+
+  const ProductItem({
+    super.key,
+    required this.imagePath,
+    required this.name,
+    required this.description,
+    required this.price,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 120,
+      width: 130,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset("assets/product.jpg",
-              height: 100, width: 120, fit: BoxFit.cover),
+          Image.asset(imagePath, height: 100, width: 130, fit: BoxFit.cover),
           SizedBox(height: 5),
-          Text("Product title", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(name,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+          SizedBox(height: 3),
+          Text(description,
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
           SizedBox(height: 3),
           Row(
             children: [
@@ -207,7 +299,7 @@ class ProductItem extends StatelessWidget {
             ],
           ),
           SizedBox(height: 3),
-          Text("\$99",
+          Text(price,
               style: TextStyle(
                   color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
         ],
@@ -262,8 +354,9 @@ class RecommendedProductItem extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: Colors.grey)),
           SizedBox(height: 5),
           Text("30% Off",
-              style:
-                  TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  color: const Color.fromRGBO(51, 171, 159, 1),
+                  fontWeight: FontWeight.bold)),
           SizedBox(height: 5),
           Text(price,
               style: TextStyle(

@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'homescreen.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProductDetailsScreen(),
-    );
-  }
-}
-
 class ProductDetailsScreen extends StatelessWidget {
+  final Map<String, String> product;
+  const ProductDetailsScreen({super.key, required this.product});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,26 +36,21 @@ class ProductDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product Image Slider
-            SizedBox(
-              height: 200,
-              child: PageView(
-                children: [
-                  Image.asset("assets/headphones.jpg",
-                      height: 200, width: double.infinity, fit: BoxFit.cover),
-                  Image.asset("assets/headphones2.jpg",
-                      height: 200, width: double.infinity, fit: BoxFit.cover),
-                  Image.asset("assets/headphones3.jpg",
-                      height: 200, width: double.infinity, fit: BoxFit.cover),
-                ],
-              ),
-            ),
+            Image.asset(product["image"]!,
+                height: 200, width: double.infinity, fit: BoxFit.cover),
+            SizedBox(height: 10),
             SizedBox(height: 10),
 
             // Product Price & Rating
+            Text(product["name"]!,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("\$99",
+                Text(product["price"]!,
                     style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -70,8 +58,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 Row(
                   children: [
                     Icon(Icons.star, color: Colors.orange, size: 18),
-                    Text(" 4.5 ",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(" 4.5 "),
                     Text("(99 reviews)", style: TextStyle(color: Colors.grey)),
                   ],
                 ),
@@ -79,21 +66,16 @@ class ProductDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
 
-            // Description
             Text("Description",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
-            Text(
-              "Quis occaecat magna elit magna do nisi ipsum amet excepteur tempor nisi exercitation qui... Quis occaecat magna elit magna do nisi ipsum amet excepteur tempor nisi exercitation qui... Quis occaecat magna elit magna do nisi ipsum amet excepteur tempor nisi exercitation qui...",
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(product["description"]!, style: TextStyle(color: Colors.grey)),
             SizedBox(height: 15),
 
-            // Category
             Text("Category",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
-            Text("Mobile and Gadgets", style: TextStyle(color: Colors.black)),
+            Text(product["category"]!, style: TextStyle(color: Colors.black)),
             SizedBox(height: 20),
 
             // Reviews Section
