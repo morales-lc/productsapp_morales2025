@@ -6,30 +6,34 @@ class HomeScreen extends StatelessWidget {
 
   final List<Map<String, String>> products = [
     {
-      "image": "assets/product.jpg",
+      "image": "assets/wirelessheadphone.jpg",
       "name": "Wireless Headphones",
-      "description": "Noise-canceling Bluetooth",
+      "description":
+          "Experience unparalleled audio quality with the UltraSound Wireless Noise-Cancelling Bluetooth Headphones. Designed for the ultimate listening experience, these headphones feature advanced noise-cancelling technology that blocks out ambient noise, allowing you to immerse yourself in your music, podcasts, or calls without distractions.",
       "price": "\$99",
       "category": "Electronics"
     },
     {
-      "image": "assets/product.jpg",
+      "image": "assets/smartwatch.jpg",
       "name": "Smartwatch",
-      "description": "Health tracker & notifications",
+      "description":
+          "Stay on top of your health and fitness goals with the HealthPro Smartwatch Health Tracker. This advanced smartwatch is designed to provide comprehensive health monitoring and fitness tracking, all while keeping you connected and stylish.",
       "price": "\$79",
       "category": "Wearables"
     },
     {
-      "image": "assets/product.jpg",
+      "image": "assets/gamingmouse.jpg",
       "name": "Gaming Mouse",
-      "description": "Ergonomic with RGB lights",
+      "description":
+          "Elevate your gaming experience with the HyperSpeed Gaming Mouse, designed for precision, speed, and comfort. This high-performance gaming mouse is perfect for both casual and competitive gamers, offering a range of features to enhance your gameplay.",
       "price": "\$120",
       "category": "Accessories"
     },
     {
-      "image": "assets/product.jpg",
+      "image": "assets/portablespeaker.jpg",
       "name": "Portable Speaker",
-      "description": "Waterproof & powerful sound",
+      "description":
+          "Take your music anywhere with the AquaSound Portable Bluetooth Waterproof Speaker. Designed for outdoor enthusiasts and music lovers, this speaker delivers powerful sound and durability in any environment.",
       "price": "\$45",
       "category": "Audio"
     },
@@ -37,30 +41,34 @@ class HomeScreen extends StatelessWidget {
 
   final List<Map<String, String>> bestSellers = [
     {
-      "image": "assets/product.jpg",
+      "image": "assets/mechanicalkeyboard.jpg",
       "name": "Mechanical Keyboard",
-      "description": "RGB backlit & responsive keys",
+      "description":
+          "Enhance your gaming experience with the Lumina RGB Mechanical Gaming Keyboard. Designed for gamers who demand precision, speed, and style, this keyboard offers a range of features to elevate your gameplay.",
       "price": "\$150",
       "category": "Accessories"
     },
     {
-      "image": "assets/product.jpg",
-      "name": "Noise Cancelling Earbuds",
+      "image": "assets/earbuds.jpg",
+      "name":
+          "Immerse yourself in your favorite music with the QuietBuds Noise-Cancelling Bluetooth Earbuds. Designed for superior sound quality and comfort, these earbuds feature advanced noise-cancelling technology to block out unwanted ambient noise, allowing you to enjoy your audio without distractions.",
       "description": "High-quality audio & mic",
       "price": "\$130",
       "category": "Audio"
     },
     {
-      "image": "assets/product.jpg",
+      "image": "assets/ssd.jpg",
       "name": "External SSD",
-      "description": "Fast 1TB storage",
+      "description":
+          "Experience lightning-fast data transfer and reliable storage with the SpeedDrive 1TB External SSD. Designed for professionals and tech enthusiasts, this portable SSD offers high-speed performance and durability in a compact form factor.",
       "price": "\$95",
       "category": "Storage"
     },
     {
-      "image": "assets/product.jpg",
+      "image": "assets/fitnesstracker.jpg",
       "name": "Fitness Tracker",
-      "description": "Monitors steps & heart rate",
+      "description":
+          "Stay on top of your health and fitness goals with the FitTrack Pro Fitness Tracker. This advanced fitness tracker is designed to provide comprehensive health monitoring and fitness tracking, all while keeping you connected and stylish.",
       "price": "\$110",
       "category": "Wearables"
     },

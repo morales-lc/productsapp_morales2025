@@ -65,6 +65,13 @@ flutter:
     - assets/camera.jpg
     - assets/laptop2.jpg
     - assets/headphones.jpg
+    - assets/wirelessheadphone.jpg
+    - assets/smartwatch.jpg
+    - assets/gamingmouse.jpg
+    - assets/portablespeaker.jpg
+    - assets/mechanicalkeyboard.jpg
+    - assets/earbuds.jpg
+    - assets/fitnesstracker.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

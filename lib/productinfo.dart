@@ -35,13 +35,9 @@ class ProductDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image Slider
             Image.asset(product["image"]!,
                 height: 200, width: double.infinity, fit: BoxFit.cover),
             SizedBox(height: 10),
-            SizedBox(height: 10),
-
-            // Product Price & Rating
             Text(product["name"]!,
                 style: TextStyle(
                     fontSize: 22,
@@ -65,20 +61,16 @@ class ProductDetailsScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-
             Text("Description",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
             Text(product["description"]!, style: TextStyle(color: Colors.grey)),
             SizedBox(height: 15),
-
             Text("Category",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
             Text(product["category"]!, style: TextStyle(color: Colors.black)),
             SizedBox(height: 20),
-
-            // Reviews Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -90,8 +82,6 @@ class ProductDetailsScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 10),
-
-            // Rating Breakdown
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -106,36 +96,68 @@ class ProductDetailsScreen extends StatelessWidget {
                   Text("(99 reviews)", style: TextStyle(color: Colors.grey)),
                   SizedBox(height: 5),
                   Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.orange),
-                      Icon(Icons.star, color: Colors.orange),
-                      Icon(Icons.star, color: Colors.orange),
-                      Icon(Icons.star, color: Colors.orange),
-                      Icon(Icons.star_half, color: Colors.orange),
-                    ],
+                    children: List.generate(
+                        5,
+                        (index) => Icon(
+                            index < 4 ? Icons.star : Icons.star_half,
+                            color: Colors.orange)),
                   ),
                   SizedBox(height: 10),
-
-                  // Review Bars
-                  _buildReviewBar(5, 80),
-                  _buildReviewBar(4, 60),
-                  _buildReviewBar(3, 40),
-                  _buildReviewBar(2, 20),
-                  _buildReviewBar(1, 10),
+                  ...List.generate(5, (index) {
+                    return Row(
+                      children: [
+                        Text("${5 - index}",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        SizedBox(width: 5),
+                        Expanded(
+                          child: LinearProgressIndicator(
+                            value: (80 - (index * 20)) / 100,
+                            backgroundColor: Colors.grey[300],
+                            color: Colors.orange,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text("${(80 - (index * 20)) ~/ 20}",
+                            style: TextStyle(color: Colors.grey))
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
             SizedBox(height: 15),
-
-            // User Reviews
-            _buildUserReview("Rovi T.", "Occaecat laboris cupidatat dolo",
-                "assets/user1.jpg"),
-            _buildUserReview("Sean S.", "Occaecat laboris cupidatat dolo",
-                "assets/user2.jpg"),
-
+            Row(
+              children: [
+                CircleAvatar(backgroundImage: AssetImage("assets/user1.jpg")),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Rovi T.",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("Occaecat laboris cupidatat dolo",
+                        style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                CircleAvatar(backgroundImage: AssetImage("assets/user2.jpg")),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Sean S.",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("Occaecat laboris cupidatat dolo",
+                        style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
             SizedBox(height: 20),
-
-            // Relevant Products Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -187,31 +209,4 @@ class ProductDetailsScreen extends StatelessWidget {
   }
 
   // Helper function for review bars
-  Widget _buildReviewBar(int stars, double percentage) {
-    return Row(
-      children: [
-        Text("$stars", style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(width: 5),
-        Expanded(
-          child: LinearProgressIndicator(
-            value: percentage / 100,
-            backgroundColor: Colors.grey[300],
-            color: Colors.orange,
-          ),
-        ),
-        SizedBox(width: 10),
-        Text("${(percentage / 20).round()}",
-            style: TextStyle(color: Colors.grey))
-      ],
-    );
-  }
-
-  // Helper function for user reviews
-  Widget _buildUserReview(String name, String review, String imagePath) {
-    return ListTile(
-      leading: CircleAvatar(backgroundImage: AssetImage(imagePath)),
-      title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(review, style: TextStyle(color: Colors.grey)),
-    );
-  }
 }
