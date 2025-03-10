@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'productinfo.dart';
-import 'productItemBuilder.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -52,8 +51,8 @@ class HomeScreen extends StatelessWidget {
     {
       "image": "assets/earbuds.jpg",
       "name":
-          "Immerse yourself in your favorite music with the QuietBuds Noise-Cancelling Bluetooth Earbuds. Designed for superior sound quality and comfort, these earbuds feature advanced noise-cancelling technology to block out unwanted ambient noise, allowing you to enjoy your audio without distractions.",
-      "description": "High-quality audio & mic",
+          "Wireless Earbuds",
+      "description": "Immerse yourself in your favorite music with the QuietBuds Noise-Cancelling Bluetooth Earbuds. Designed for superior sound quality and comfort, these earbuds feature advanced noise-cancelling technology to block out unwanted ambient noise, allowing you to enjoy your audio without distractions.",
       "price": "\$130",
       "category": "Audio"
     },
@@ -266,6 +265,56 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+//class for product item lists
+class ProductItem extends StatelessWidget {
+  final String imagePath;
+  final String name;
+  final String description;
+  final String price;
+
+  const ProductItem({
+    super.key,
+    required this.imagePath,
+    required this.name,
+    required this.description,
+    required this.price,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 130,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.asset(imagePath, height: 100, width: 130, fit: BoxFit.cover),
+          SizedBox(height: 5),
+          Text(name,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+          SizedBox(height: 3),
+          Text(description,
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
+          SizedBox(height: 3),
+          Row(
+            children: [
+              Icon(Icons.star, color: Colors.orange, size: 16),
+              Text(" 4.5"),
+            ],
+          ),
+          SizedBox(height: 3),
+          Text(price,
+              style: TextStyle(
+                  color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+}
+
 class CategoryItem extends StatelessWidget {
   final String title;
   final String imagePath;
@@ -304,7 +353,8 @@ class RecommendedProductItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(imagePath, height: 120, width: 200, fit: BoxFit.cover),
+          Image.asset(imagePath,
+              height: 120, width: 200, fit: BoxFit.cover), // Using an image now
           SizedBox(height: 5),
           Text("Product title", style: TextStyle(fontWeight: FontWeight.bold)),
           Text("Product description",
