@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'productinfo.dart';
+import 'addproduct.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -50,9 +51,9 @@ class HomeScreen extends StatelessWidget {
     },
     {
       "image": "assets/earbuds.jpg",
-      "name":
-          "Wireless Earbuds",
-      "description": "Immerse yourself in your favorite music with the QuietBuds Noise-Cancelling Bluetooth Earbuds. Designed for superior sound quality and comfort, these earbuds feature advanced noise-cancelling technology to block out unwanted ambient noise, allowing you to enjoy your audio without distractions.",
+      "name": "Wireless Earbuds",
+      "description":
+          "Immerse yourself in your favorite music with the QuietBuds Noise-Cancelling Bluetooth Earbuds. Designed for superior sound quality and comfort, these earbuds feature advanced noise-cancelling technology to block out unwanted ambient noise, allowing you to enjoy your audio without distractions.",
       "price": "\$130",
       "category": "Audio"
     },
@@ -89,6 +90,58 @@ class HomeScreen extends StatelessWidget {
           ),
           SizedBox(width: 15),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.pinkAccent),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage("assets/profile.jpg"),
+                    radius: 30,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "User Name",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  Text(
+                    "user@example.com",
+                    style: TextStyle(fontSize: 14, color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.add_box),
+              title: Text('Add Product'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddProductScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () {
+                // Handle logout
+              },
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

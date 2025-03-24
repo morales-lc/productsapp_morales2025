@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'homescreen.dart';
 import 'productinfo.dart';
+import 'login.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: LoginScreen(),
       //home: ProductDetailsScreen(),
     );
   }
