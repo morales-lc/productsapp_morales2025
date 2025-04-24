@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'language_model.dart';
+import 'background_model.dart';
+import 'package:provider/provider.dart';
 
 class AddProductScreen extends StatefulWidget {
   @override
@@ -13,10 +16,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pinkAccent,
-        title: Text('Add New Product'),
+        title: Text(
+          isFilipino ? "Magdagdag ng Bagong Produkto" : 'Add New Product',
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -28,10 +34,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Add product images",
+              isFilipino
+                  ? "Magdagdag ng mga larawan ng produkto"
+                  : "Add product images",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text("Add up to 5 images. First image will be highlighted."),
+            Text(
+              isFilipino
+                  ? "Magdagdag ng hanggang 5 larawan. Ang unang larawan ang ipapakita."
+                  : "Add up to 5 images. First image will be highlighted.",
+            ),
             SizedBox(height: 10),
             Row(
               children: [
@@ -49,13 +61,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              "Product details",
+              isFilipino ? "Mga detalye ng produkto" : "Product details",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: "Select product category",
+                labelText: isFilipino
+                    ? "Pumili ng kategorya ng produkto"
+                    : "Select product category",
                 border: OutlineInputBorder(),
               ),
               items: ["Mobile and Gadgets", "Wearables", "Accessories"]
@@ -74,7 +88,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             TextField(
               controller: productNameController,
               decoration: InputDecoration(
-                labelText: "Product name",
+                labelText: isFilipino ? "Pangalan ng produkto" : "Product name",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -83,7 +97,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
               controller: productDescriptionController,
               maxLines: 4,
               decoration: InputDecoration(
-                labelText: "Product description",
+                labelText: isFilipino
+                    ? "Deskripsyon ng produkto"
+                    : "Product description",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -98,7 +114,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
                     ),
-                    child: Text("Cancel"),
+                    child: Text(isFilipino ? "Kanselahin" : "Cancel"),
                   ),
                 ),
                 SizedBox(width: 10),
@@ -110,7 +126,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.pinkAccent,
                     ),
-                    child: Text("Add product"),
+                    child: Text(isFilipino ? "Idagdag" : "Add product"),
                   ),
                 ),
               ],
