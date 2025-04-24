@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'homescreen.dart';
 import 'productinfo.dart';
 import 'login.dart';
+import 'background_model.dart';
+import 'language_model.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Backgroundmodel()),
+        ChangeNotifierProvider(create: (_) => LanguageModel()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,10 +24,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-      //home: ProductDetailsScreen(),
+    return Consumer<Backgroundmodel>(
+      builder: (context, bgModel, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: LoginScreen(),
+          theme: ThemeData(
+            scaffoldBackgroundColor: bgModel.getBkg(),
+            appBarTheme: AppBarTheme(
+              backgroundColor: Colors.pinkAccent,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'productinfo.dart';
 import 'addproduct.dart';
+import 'settings.dart';
+import 'language_model.dart';
+import 'background_model.dart';
+import 'package:provider/provider.dart';
+import 'login.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -77,6 +82,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -125,7 +131,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.add_box),
-              title: Text('Add Product'),
+              title: Text(isFilipino ? "Magdagdag ng Produkto" : 'Add Product'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -134,10 +140,22 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Handle settings
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()));
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.logout),
-              title: Text('Logout'),
+              title: Text(isFilipino ? "Mag-Logout" : 'Logout'),
               onTap: () {
                 // Handle logout
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return LoginScreen(); // Assuming you have a LoginScreen
+                }));
               },
             ),
           ],
@@ -158,8 +176,10 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 20),
 
               // Products Section
-              Text("Products",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                isFilipino ? "Mga Produkto" : "Products",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 10),
               SizedBox(
                 height: 200,
@@ -197,10 +217,11 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Best Seller",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("See all >",
+                  Text(
+                    isFilipino ? "Pinakamabenta" : "Best Seller",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(isFilipino ? "Ipakita lahat >" : "See all >",
                       style: TextStyle(color: Colors.blue, fontSize: 14)),
                 ],
               ),
@@ -238,8 +259,10 @@ class HomeScreen extends StatelessWidget {
               SizedBox(height: 20),
 
               // Categories Section
-              Text("Categories",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                isFilipino ? "Mga Kategorya" : "Categories",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 10),
               Column(
                 children: [
@@ -272,8 +295,12 @@ class HomeScreen extends StatelessWidget {
 
               // Recommended Products Section
               // Recommended Products Section
-              Text("Recommended for you",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                isFilipino
+                    ? "Inirerekomenda para sa iyo"
+                    : "Recommended for you",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 10),
               Column(
                 children: [

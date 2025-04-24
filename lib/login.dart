@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'homescreen.dart';
+import 'language_model.dart';
+import 'background_model.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     return Scaffold(
       backgroundColor: Colors.pinkAccent,
       body: Center(
@@ -39,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        "Welcome back",
+                        isFilipino ? "Maligayang pagdating" : "Welcome back",
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
@@ -55,7 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 5),
                       TextField(
                         decoration: InputDecoration(
-                          hintText: "Enter User name",
+                          hintText: isFilipino
+                              ? "Ilagay ang User name"
+                              : "Enter User name",
                           prefixIcon: Icon(Icons.person),
                           filled: true,
                           fillColor: Colors.grey[200],
@@ -76,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          hintText: "Enter password",
+                          hintText: isFilipino
+                              ? "Ilagay ang Password"
+                              : "Enter Password",
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -106,7 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            "Forgot password?",
+                            isFilipino
+                                ? "Nakalimutan ang password?"
+                                : "Forgot password?",
                             style: TextStyle(color: Colors.teal),
                           ),
                         ),
@@ -132,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           },
                           child: Text(
-                            "Sign In",
+                            isFilipino ? "Mag-sign In" : "Sign In",
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
@@ -148,11 +158,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {},
                           child: RichText(
                             text: TextSpan(
-                              text: "Don't have an account? ",
+                              text: isFilipino
+                                  ? "Walang account?"
+                                  : "Don't have an account? ",
                               style: TextStyle(color: Colors.black),
                               children: [
                                 TextSpan(
-                                  text: "Sign up",
+                                  text: isFilipino ? "Mag-sign up" : "Sign up",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.teal,

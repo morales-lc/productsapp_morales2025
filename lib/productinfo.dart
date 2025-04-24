@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'homescreen.dart';
+import 'language_model.dart';
+import 'background_model.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final Map<String, String> product;
@@ -7,12 +10,13 @@ class ProductDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.pinkAccent,
         elevation: 0,
-        title: Text("Product Name",
+        title: Text(isFilipino ? "Pangalan ng produkto" : "Product Name",
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -55,20 +59,21 @@ class ProductDetailsScreen extends StatelessWidget {
                   children: [
                     Icon(Icons.star, color: Colors.orange, size: 18),
                     Text(" 4.5 "),
-                    Text("(99 reviews)", style: TextStyle(color: Colors.grey)),
+                    Text(isFilipino ? "(99 pagsusuri)" : "(99 reviews)",
+                        style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ],
             ),
             SizedBox(height: 10),
-            Text("Description",
+            Text(isFilipino ? "Paglalarawan" : "Description",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
             Text(product["description"]!,
                 textAlign: TextAlign.justify,
                 style: TextStyle(color: Colors.grey)),
             SizedBox(height: 15),
-            Text("Category",
+            Text(isFilipino ? "Kategorya" : "Category",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 5),
             Text(product["category"]!,
@@ -77,10 +82,10 @@ class ProductDetailsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Reviews",
+                Text(isFilipino ? "Mga Komento" : "Reviews",
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                Text("See all >",
+                Text(isFilipino ? "Ipakita lahal >" : "See all >",
                     style: TextStyle(color: Colors.blue, fontSize: 14)),
               ],
             ),
@@ -96,7 +101,8 @@ class ProductDetailsScreen extends StatelessWidget {
                   Text("4.5/5",
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  Text("(99 reviews)", style: TextStyle(color: Colors.grey)),
+                  Text(isFilipino ? "(99 pagsusuri)" : "(99 reviews)",
+                      style: TextStyle(color: Colors.grey)),
                   SizedBox(height: 5),
                   Row(
                     children: List.generate(
@@ -164,10 +170,13 @@ class ProductDetailsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Relevant products",
+                Text(
+                    isFilipino
+                        ? "Mga kaugnay na produkto"
+                        : "Relevant products",
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                Text("See all >",
+                Text(isFilipino ? "Ipakita lahal" : "See all >",
                     style: TextStyle(color: Colors.blue, fontSize: 14)),
               ],
             ),
@@ -203,7 +212,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               padding: EdgeInsets.symmetric(vertical: 15)),
           onPressed: () {},
-          child: Text("Buy Now",
+          child: Text(isFilipino ? "Bumili na" : "Buy Now",
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
