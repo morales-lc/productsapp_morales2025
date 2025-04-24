@@ -30,10 +30,18 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: LoginScreen(),
           theme: ThemeData(
-            scaffoldBackgroundColor: bgModel.getBkg(),
+            scaffoldBackgroundColor: Colors.white, // Fixed white background
             appBarTheme: AppBarTheme(
-              backgroundColor: Colors.pinkAccent,
+              backgroundColor: bgModel.appBar,
               foregroundColor: Colors.white,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bgModel.button,
+              ),
+            ),
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              secondary: bgModel.accent,
             ),
           ),
         );

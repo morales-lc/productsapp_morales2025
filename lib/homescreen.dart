@@ -83,10 +83,11 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: backgroundModel.appBar,
         elevation: 0,
         actions: [
           Icon(Icons.notifications_none, color: Colors.black),
@@ -362,6 +363,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
     return SizedBox(
       width: 130,
       child: Column(
@@ -388,7 +390,8 @@ class ProductItem extends StatelessWidget {
           SizedBox(height: 3),
           Text(price,
               style: TextStyle(
-                  color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+                  color: backgroundModel.textColor,
+                  fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -428,6 +431,7 @@ class RecommendedProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
     return SizedBox(
       width: 200,
       child: Column(
@@ -447,7 +451,8 @@ class RecommendedProductItem extends StatelessWidget {
           SizedBox(height: 5),
           Text(price,
               style: TextStyle(
-                  color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+                  color: backgroundModel.textColor,
+                  fontWeight: FontWeight.bold)),
           Text("500 sold", style: TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),

@@ -17,9 +17,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
+
     return Scaffold(
+      backgroundColor: Colors.white, // Always white
       appBar: AppBar(
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: backgroundModel.appBar,
         title: Text(
           isFilipino ? "Magdagdag ng Bagong Produkto" : 'Add New Product',
         ),
@@ -112,7 +115,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
+                      backgroundColor: const Color.fromARGB(255, 88, 88, 88),
+                      foregroundColor:
+                          Colors.white, // explicitly set text color
                     ),
                     child: Text(isFilipino ? "Kanselahin" : "Cancel"),
                   ),
@@ -124,7 +129,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       // Handle adding product
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pinkAccent,
+                      backgroundColor: backgroundModel.button,
+                      foregroundColor:
+                          Colors.white, // explicitly set text color
                     ),
                     child: Text(isFilipino ? "Idagdag" : "Add product"),
                   ),

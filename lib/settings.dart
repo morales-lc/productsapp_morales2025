@@ -4,127 +4,124 @@ import 'background_model.dart';
 import 'language_model.dart';
 
 class SettingsScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> colorOptions = [
-    {
-      "name": "Default",
-      "rgb": [255, 255, 255]
-    },
-    {
-      "name": "Light Purple",
-      "rgb": [230, 220, 255]
-    },
-  ];
-
   final List<String> languages = ["English", "Filipino"];
 
   @override
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
-    final currentColor = backgroundModel.getBkg();
-
-    int selectedColorIndex = colorOptions.indexWhere((opt) =>
-        currentColor ==
-        Color.fromRGBO(opt["rgb"][0], opt["rgb"][1], opt["rgb"][2], 1));
 
     return Scaffold(
-      backgroundColor: currentColor,
+      backgroundColor: Colors.white, // Always white background
       appBar: AppBar(
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: backgroundModel.appBar,
         title: Text("Settings"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Change language",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: languageModel.language,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.pinkAccent),
-                  borderRadius: BorderRadius.circular(10),
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Change language",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: languageModel.language,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: backgroundModel.accent),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                items: languages
+                    .map((lang) => DropdownMenuItem(
+                          value: lang,
+                          child: Text(lang),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    languageModel.setLanguage(value);
+                  }
+                },
               ),
-              items: languages
-                  .map((lang) => DropdownMenuItem(
-                        value: lang,
-                        child: Text(lang),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  languageModel.setLanguage(value);
-                }
-              },
-            ),
-            SizedBox(height: 30),
-            Text("Change page color",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            SizedBox(height: 12),
-            Row(
-              children: List.generate(colorOptions.length, (i) {
-                final rgb = colorOptions[i]["rgb"];
-                final color = Color.fromRGBO(rgb[0], rgb[1], rgb[2], 1);
-                final isSelected = i == selectedColorIndex;
-
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
+              SizedBox(height: 30),
+              Text("Change app theme",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  GestureDetector(
                     onTap: () {
-                      backgroundModel.changeBkg(rgb[0], rgb[1], rgb[2]);
+                      backgroundModel.reset();
                     },
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: color,
-                      child: isSelected
+                      backgroundColor: Colors.pinkAccent,
+                      child: backgroundModel.theme == "default"
                           ? Icon(Icons.check, color: Colors.white, size: 16)
                           : null,
                     ),
                   ),
-                );
-              }),
-            ),
-            Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
+                  SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      backgroundModel.applyPurpleTheme();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF00695C),
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Color.fromRGBO(240, 230, 255, 1),
+                      child: backgroundModel.theme == "purple"
+                          ? Icon(Icons.check, color: Colors.white, size: 16)
+                          : null,
                     ),
-                    child: Text("Cancel"),
                   ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pinkAccent,
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                ],
+              ),
+              Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00695C),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: Text("Cancel"),
                     ),
-                    child: Text("Save"),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: backgroundModel.accent,
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text("Save"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
