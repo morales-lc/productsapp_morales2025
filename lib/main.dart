@@ -35,11 +35,7 @@ class MyApp extends StatelessWidget {
               backgroundColor: bgModel.appBar,
               foregroundColor: Colors.white,
             ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: bgModel.button,
-              ),
-            ),
+
             colorScheme: ColorScheme.fromSwatch().copyWith(
               secondary: bgModel.accent,
             ),

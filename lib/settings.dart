@@ -10,12 +10,13 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
 
     return Scaffold(
       backgroundColor: Colors.white, // Always white background
       appBar: AppBar(
         backgroundColor: backgroundModel.appBar,
-        title: Text("Settings"),
+        title: Text(isFilipino ? "Settings" : "Settings"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -28,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Change language",
+              Text(isFilipino ? "baguhin ang wika" : "Change language",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               SizedBox(height: 8),
               DropdownButtonFormField<String>(
@@ -52,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
               SizedBox(height: 30),
-              Text("Change app theme",
+              Text(isFilipino ? "baguhin ang tema ng app" : "Change app theme",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               SizedBox(height: 12),
               Row(
@@ -76,7 +77,7 @@ class SettingsScreen extends StatelessWidget {
                     },
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: Color.fromRGBO(240, 230, 255, 1),
+                      backgroundColor: Colors.deepPurple.shade400,
                       child: backgroundModel.theme == "purple"
                           ? Icon(Icons.check, color: Colors.white, size: 16)
                           : null,
@@ -93,13 +94,14 @@ class SettingsScreen extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00695C),
+                        foregroundColor: Colors.white,
+                        backgroundColor: backgroundModel.secondBtn,
                         padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text("Cancel"),
+                      child: Text(isFilipino ? "kanselahin" : "Cancel"),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -109,13 +111,14 @@ class SettingsScreen extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
                         backgroundColor: backgroundModel.accent,
                         padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text("Save"),
+                      child: Text(isFilipino ? "I-save" : "Save"),
                     ),
                   ),
                 ],

@@ -17,8 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
     return Scaffold(
-      backgroundColor: Colors.pinkAccent,
+      backgroundColor: backgroundModel.accent,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -128,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pink,
+                            backgroundColor: backgroundModel.button,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),

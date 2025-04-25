@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.pinkAccent),
+              decoration: BoxDecoration(color: backgroundModel.appBar),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

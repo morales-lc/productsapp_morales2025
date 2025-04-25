@@ -115,7 +115,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 88, 88, 88),
+                      backgroundColor: backgroundModel.secondBtn,
                       foregroundColor:
                           Colors.white, // explicitly set text color
                     ),
