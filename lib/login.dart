@@ -3,6 +3,8 @@ import 'homescreen.dart';
 import 'language_model.dart';
 import 'background_model.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +15,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 5),
                       TextField(
+                        controller:
+                            _usernameController, //TextController for username
                         decoration: InputDecoration(
                           hintText: isFilipino
                               ? "Ilagay ang User name"
@@ -81,6 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 5),
                       TextField(
+                        controller:
+                            _passwordController, //TextController for password
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           hintText: isFilipino
@@ -135,12 +144,55 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             padding: EdgeInsets.symmetric(vertical: 14),
                           ),
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
-                            );
+                          onPressed: () async {
+                            if (_usernameController.text.isEmpty ||
+                                _passwordController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(isFilipino
+                                        ? "Pakitapos ang lahat ng fields."
+                                        : "Please complete all fields.")),
+                              );
+                              return;
+                            }
+
+                            try {
+                              final response = await http.post(
+                                Uri.parse(
+                                    'http://127.0.0.1:8000/api/auth/login'),
+                                headers: {
+                                  'Content-Type':
+                                      'application/json; charset=UTF-8',
+                                },
+                                body: jsonEncode({
+                                  'username': _usernameController.text,
+                                  'password': _passwordController.text,
+                                }),
+                              );
+
+                              if (response.statusCode == 200) {
+                                if (!mounted) return;
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomeScreen()),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(isFilipino
+                                          ? "Maling kredensyal."
+                                          : "Invalid credentials.")),
+                                );
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(isFilipino
+                                        ? "May problema sa koneksyon."
+                                        : "Connection error.")),
+                              );
+                            }
                           },
                           child: Text(
                             isFilipino ? "Mag-sign In" : "Sign In",

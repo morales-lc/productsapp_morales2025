@@ -7,8 +7,38 @@ import 'background_model.dart';
 import 'package:provider/provider.dart';
 import 'login.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showWelcomeDialog();
+    });
+  }
+
+  void showWelcomeDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Welcome!"),
+        content: Text("You have successfully logged in."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 
   final List<Map<String, String>> products = [
     {
@@ -79,10 +109,10 @@ class HomeScreen extends StatelessWidget {
       "category": "Wearables"
     },
   ];
-
   @override
   Widget build(BuildContext context) {
-    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final isFilipino =
+        Provider.of<LanguageModel>(context, listen: false).isFilipino();
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -154,9 +184,8 @@ class HomeScreen extends StatelessWidget {
               title: Text(isFilipino ? "Mag-Logout" : 'Logout'),
               onTap: () {
                 // Handle logout
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginScreen(); // Assuming you have a LoginScreen
-                }));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
               },
             ),
           ],
