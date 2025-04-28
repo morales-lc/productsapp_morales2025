@@ -7,6 +7,26 @@ import 'background_model.dart';
 import 'package:provider/provider.dart';
 import 'login.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'product_model.dart';
+
+class ProductService {
+  static Future<List<Product>> fetchProducts() async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/api/products'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List productsData = responseData['data']; // 👈 inside 'data'
+
+      return productsData.map((item) => Product.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -16,20 +36,41 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void loadProducts() async {
+    try {
+      List<Product> fetchedProducts = await ProductService.fetchProducts();
+      setState(() {
+        products = fetchedProducts;
+        isLoading = false;
+      });
+    } catch (e) {
+      // You can also show a Snackbar here to notify users
+      print('Failed to fetch products: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showWelcomeDialog();
+      loadProducts();
     });
   }
 
   void showWelcomeDialog() {
+    final isFilipino =
+        Provider.of<LanguageModel>(context, listen: false).isFilipino();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Welcome!"),
-        content: Text("You have successfully logged in."),
+        title: Text(isFilipino ? "Maligayang pagdating!" : "Welcome!"),
+        content: Text(isFilipino
+            ? "Matagumpay kang nakalog-in."
+            : "You have successfully logged in."),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -40,41 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  final List<Map<String, String>> products = [
-    {
-      "image": "assets/wirelessheadphone.jpg",
-      "name": "Wireless Headphones",
-      "description":
-          "Experience unparalleled audio quality with the UltraSound Wireless Noise-Cancelling Bluetooth Headphones. Designed for the ultimate listening experience, these headphones feature advanced noise-cancelling technology that blocks out ambient noise, allowing you to immerse yourself in your music, podcasts, or calls without distractions.",
-      "price": "\$99",
-      "category": "Electronics"
-    },
-    {
-      "image": "assets/smartwatch.jpg",
-      "name": "Smartwatch",
-      "description":
-          "Stay on top of your health and fitness goals with the HealthPro Smartwatch Health Tracker. This advanced smartwatch is designed to provide comprehensive health monitoring and fitness tracking, all while keeping you connected and stylish.",
-      "price": "\$79",
-      "category": "Wearables"
-    },
-    {
-      "image": "assets/gamingmouse.jpg",
-      "name": "Gaming Mouse",
-      "description":
-          "Elevate your gaming experience with the HyperSpeed Gaming Mouse, designed for precision, speed, and comfort. This high-performance gaming mouse is perfect for both casual and competitive gamers, offering a range of features to enhance your gameplay.",
-      "price": "\$120",
-      "category": "Accessories"
-    },
-    {
-      "image": "assets/portablespeaker.jpg",
-      "name": "Portable Speaker",
-      "description":
-          "Take your music anywhere with the AquaSound Portable Bluetooth Waterproof Speaker. Designed for outdoor enthusiasts and music lovers, this speaker delivers powerful sound and durability in any environment.",
-      "price": "\$45",
-      "category": "Audio"
-    },
-  ];
-
+  List<Product> products = [];
   final List<Map<String, String>> bestSellers = [
     {
       "image": "assets/mechanicalkeyboard.jpg",
@@ -109,6 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
       "category": "Wearables"
     },
   ];
+  bool isLoading = true;
+
   @override
   Widget build(BuildContext context) {
     final isFilipino =
@@ -211,36 +220,54 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailsScreen(
-                                  product: products[index]),
+              // Horizontal List of Products
+              isLoading
+                  ? SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 4,
+                        itemBuilder: (context, index) => Container(
+                          width: 130,
+                          margin: EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProductDetailsScreen(product: product),
+                                  ),
+                                );
+                              },
+                              child: ProductItem(
+                                imagePath: product.image,
+                                networkImageUrl: product.fullImageUrl,
+                                name: product.name,
+                                description: product.description,
+                                price: product.price.toString(),
+                              ),
                             ),
                           );
                         },
-                        child: ProductItem(
-                          imagePath: products[index]["image"]!,
-                          name: products[index]["name"]!,
-                          description: products[index]["description"]!,
-                          price: products[index]["price"]!,
-                        ),
                       ),
-                    );
-                  },
-                ),
-              ),
-
+                    ),
               SizedBox(height: 20),
 
               // Best Seller Section
@@ -266,11 +293,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.only(right: 10),
                       child: GestureDetector(
                         onTap: () {
+                          final bestSeller = bestSellers[index];
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ProductDetailsScreen(
-                                  product: bestSellers[index]),
+                                product: Product(
+                                  id: 0, // You can assign a dummy id (since best sellers have no ID)
+                                  name: bestSeller["name"] ?? "No Name",
+                                  description: bestSeller["description"] ??
+                                      "No Description",
+                                  price: double.tryParse(bestSeller["price"]
+                                              ?.replaceAll('\$', '') ??
+                                          "0") ??
+                                      0,
+                                  image: bestSeller["image"] ?? '',
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -378,6 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //class for product item lists
 class ProductItem extends StatelessWidget {
   final String imagePath;
+  final String? networkImageUrl;
   final String name;
   final String description;
   final String price;
@@ -385,6 +426,7 @@ class ProductItem extends StatelessWidget {
   const ProductItem({
     super.key,
     required this.imagePath,
+    this.networkImageUrl,
     required this.name,
     required this.description,
     required this.price,
@@ -398,7 +440,20 @@ class ProductItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(imagePath, height: 100, width: 130, fit: BoxFit.cover),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: imagePath.contains('assets/')
+                ? Image.asset(imagePath,
+                    height: 100, width: 130, fit: BoxFit.cover)
+                : Image.network(
+                    'http://127.0.0.1:8000/storage/' + imagePath,
+                    height: 100,
+                    width: 130,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.broken_image, size: 50),
+                  ),
+          ),
           SizedBox(height: 5),
           Text(name,
               style: TextStyle(fontWeight: FontWeight.bold),

@@ -1,0 +1,2 @@
+C:/Users/LENOVO/Documents/Mobile_Dev/Laravel/productsapp_morales2025/android/app/.cxx/Debug/3h304f3z/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/LENOVO/Documents/Mobile_Dev/Laravel/productsapp_morales2025/android/app/.cxx/Debug/3h304f3z/x86_64/CMakeFiles/rebuild_cache.dir
