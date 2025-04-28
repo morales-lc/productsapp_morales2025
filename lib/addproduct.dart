@@ -2,10 +2,46 @@ import 'package:flutter/material.dart';
 import 'language_model.dart';
 import 'background_model.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'category_service.dart';
 
 class AddProductScreen extends StatefulWidget {
+  const AddProductScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AddProductScreenState createState() => _AddProductScreenState();
+}
+
+class AddProductService {
+  static Future<bool> addProduct({
+    required String name,
+    required String description,
+    required String price,
+    required int categoryId,
+  }) async {
+    final url = Uri.parse('http://127.0.0.1:8000/api/products');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'name': name,
+        'description': description,
+        'price': price,
+        'category_id': categoryId,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return true; // Successfully created
+    } else {
+      throw Exception('Failed to add product');
+    }
+  }
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
@@ -13,6 +49,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController productDescriptionController =
       TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+
+  List<Map<String, dynamic>> categories = [];
+  bool isLoadingCategories = true;
+
+  int mapCategoryToId(String categoryName) {
+    switch (categoryName) {
+      case "Mobile and Gadgets":
+        return 1;
+      case "Wearables":
+        return 2;
+      case "Accessories":
+        return 3;
+      default:
+        return 1; // Default fallback
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  void loadCategories() async {
+    try {
+      categories = await CategoryService.getCategories();
+    } catch (e) {
+      // Handle error if needed
+    } finally {
+      setState(() {
+        isLoadingCategories = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,25 +139,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: isFilipino
-                    ? "Pumili ng kategorya ng produkto"
-                    : "Select product category",
-                border: OutlineInputBorder(),
-              ),
-              items: ["Mobile and Gadgets", "Wearables", "Accessories"]
-                  .map((category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value;
-                });
-              },
-            ),
+            isLoadingCategories
+                ? CircularProgressIndicator()
+                : DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: isFilipino
+                          ? "Pumili ng kategorya ng produkto"
+                          : "Select product category",
+                      border: OutlineInputBorder(),
+                    ),
+                    value: selectedCategory,
+                    items: categories.map((category) {
+                      return DropdownMenuItem<String>(
+                        value: category['id'].toString(),
+                        child: Text(category['name']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCategory = value;
+                      });
+                    },
+                  ),
             SizedBox(height: 10),
             TextField(
               controller: productNameController,
@@ -103,6 +177,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 labelText: isFilipino
                     ? "Deskripsyon ng produkto"
                     : "Product description",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: priceController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: isFilipino ? "Presyo" : "Price",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -125,13 +208,48 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Handle adding product
+                    onPressed: () async {
+                      if (productNameController.text.isEmpty ||
+                          productDescriptionController.text.isEmpty ||
+                          priceController.text.isEmpty ||
+                          selectedCategory == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(isFilipino
+                                  ? "Pakitapos ang lahat ng fields."
+                                  : "Please complete all fields.")),
+                        );
+                        return;
+                      }
+
+                      try {
+                        await AddProductService.addProduct(
+                          name: productNameController.text,
+                          description: productDescriptionController.text,
+                          price: priceController.text,
+                          categoryId: int.parse(selectedCategory!),
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(isFilipino
+                                  ? "Matagumpay na naidagdag ang produkto!"
+                                  : "Product added successfully!")),
+                        );
+
+                        Navigator.pop(context);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(isFilipino
+                                  ? "Nabigo ang pagdaragdag ng produkto."
+                                  : "Failed to add product.")),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: backgroundModel.button,
-                      foregroundColor:
-                          Colors.white, // explicitly set text color
+                      foregroundColor: Colors.white,
                     ),
                     child: Text(isFilipino ? "Idagdag" : "Add product"),
                   ),
