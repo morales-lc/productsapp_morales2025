@@ -6,13 +6,33 @@ import 'package:provider/provider.dart';
 import 'btn_productinfo.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
-  final Map<String, String> product;
+  final Map<String, dynamic> product;
   const ProductDetailsScreen({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     final backgroundModel = Provider.of<Backgroundmodel>(context);
+    String imagePath;
+    if (product["image_path"] != null) {
+      imagePath = 'http://192.168.1.137:8000/storage/${product["image_path"]}';
+    } else if (product["image"] != null) {
+      imagePath = product["image"].toString();
+    } else {
+      imagePath = 'https://via.placeholder.com/130';
+    }
+    Widget imageWidget = Image.network(
+      imagePath,
+      height: 350,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Container(
+        height: 200,
+        width: double.infinity,
+        color: Colors.grey,
+        child: Icon(Icons.broken_image, size: 50),
+      ),
+    );
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -42,10 +62,9 @@ class ProductDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(product["image"]!,
-                  height: 200, width: double.infinity, fit: BoxFit.cover),
+              imageWidget,
               SizedBox(height: 10),
-              Text(product["name"]!,
+              Text(product["name"].toString(),
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -53,7 +72,10 @@ class ProductDetailsScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(product["price"]!,
+                  Text(
+                      product["price"] != null
+                          ? product["price"].toString()
+                          : '',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -72,14 +94,20 @@ class ProductDetailsScreen extends StatelessWidget {
               Text(isFilipino ? "Paglalarawan" : "Description",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               SizedBox(height: 5),
-              Text(product["description"]!,
+              Text(
+                  product["description"] != null
+                      ? product["description"].toString()
+                      : '',
                   textAlign: TextAlign.justify,
                   style: TextStyle(color: Colors.grey)),
               SizedBox(height: 15),
               Text(isFilipino ? "Kategorya" : "Category",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               SizedBox(height: 5),
-              Text(product["category"]!,
+              Text(
+                  product["category"] != null
+                      ? product["category"].toString()
+                      : '',
                   style:
                       TextStyle(color: const Color.fromRGBO(0, 150, 136, 1))),
               SizedBox(height: 20),

@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'category_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -20,24 +24,24 @@ class AddProductService {
     required String description,
     required String price,
     required int categoryId,
+    required int userId,
+    File? image, // 👈 optional image file
   }) async {
-    final url = Uri.parse('http://127.0.0.1:8000/api/products');
+    final url = Uri.parse('http://192.168.1.137:8000/api/products');
+    var request = http.MultipartRequest('POST', url);
+    request.fields['name'] = name;
+    request.fields['description'] = description;
+    request.fields['price'] = price;
+    request.fields['category_id'] = categoryId.toString();
+    request.fields['user_id'] = userId.toString();
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'name': name,
-        'description': description,
-        'price': price,
-        'category_id': categoryId,
-      }),
-    );
+    if (image != null) {
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    }
 
+    final response = await request.send();
     if (response.statusCode == 201) {
-      return true; // Successfully created
+      return true;
     } else {
       throw Exception('Failed to add product');
     }
@@ -64,6 +68,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
         return 3;
       default:
         return 1; // Default fallback
+    }
+  }
+
+  File? _image;
+
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _image = File(picked.path);
+      });
     }
   }
 
@@ -119,19 +134,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   : "Add up to 5 images. First image will be highlighted.",
             ),
             SizedBox(height: 10),
-            Row(
-              children: [
-                Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.add, size: 40, color: Colors.grey),
-                ),
-                SizedBox(width: 10),
-              ],
+            GestureDetector(
+              onTap: _pickImage,
+              child: _image == null
+                  ? Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.add, size: 40, color: Colors.grey),
+                    )
+                  : Image.file(_image!,
+                      height: 80, width: 80, fit: BoxFit.cover),
             ),
             SizedBox(height: 20),
             Text(
@@ -221,6 +237,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         );
                         return;
                       }
+                      final prefs = await SharedPreferences.getInstance();
+                      final userId = prefs.getInt('user_id');
+                      if (userId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("User not logged in.")),
+                        );
+                        return;
+                      }
 
                       try {
                         await AddProductService.addProduct(
@@ -228,6 +252,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           description: productDescriptionController.text,
                           price: priceController.text,
                           categoryId: int.parse(selectedCategory!),
+                          userId: userId,
+                          image: _image, // 👈 pass to service
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(

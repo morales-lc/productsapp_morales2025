@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'homescreen.dart';
-import 'productinfo.dart';
 import 'login.dart';
 import 'background_model.dart';
 import 'language_model.dart';

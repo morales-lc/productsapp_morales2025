@@ -5,6 +5,7 @@ import 'background_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +19,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _testConnection();
+  }
+
+  void _testConnection() async {
+    try {
+      final response = await http.get(Uri.parse('http://192.168.1.137:8000'));
+      debugPrint('Status: ${response.statusCode}');
+      debugPrint('Body: ${response.body}');
+    } catch (e) {
+      debugPrint('Connection failed: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             try {
                               final response = await http.post(
                                 Uri.parse(
-                                    'http://127.0.0.1:8000/api/auth/login'),
+                                    'http://192.168.1.137:8000/api/auth/login'),
                                 headers: {
                                   'Content-Type':
                                       'application/json; charset=UTF-8',
@@ -171,7 +188,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
 
                               if (response.statusCode == 200) {
+                                final responseData = jsonDecode(response.body);
+                                final userId = responseData['user']['id'];
+                                final username =
+                                    responseData['user']['username'];
+                                final email = responseData['user']['email'];
+
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setInt('user_id', userId);
+                                await prefs.setString(
+                                    'user_name', username ?? 'User Name');
+                                await prefs.setString(
+                                    'user_email', email ?? 'user@example.com');
+
                                 if (!mounted) return;
+
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -180,17 +212,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content: Text(isFilipino
-                                          ? "Maling kredensyal."
-                                          : "Invalid credentials.")),
+                                    content: Text(isFilipino
+                                        ? "Maling kredensyal."
+                                        : "Invalid credentials."),
+                                  ),
                                 );
                               }
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text(isFilipino
-                                        ? "May problema sa koneksyon."
-                                        : "Connection error.")),
+                                  content: Text(isFilipino
+                                      ? "May problema sa koneksyon."
+                                      : "Connection error."),
+                                ),
                               );
                             }
                           },
