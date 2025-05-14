@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'models/Products.dart';
 import 'editproduct_screen.dart';
+import 'config.dart';
 
 class MyProductsScreen extends StatefulWidget {
   final int userId;
@@ -24,8 +25,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   }
 
   Future<void> _fetchProducts() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.137:8000/api/products/${widget.userId}'));
+    final response = await http
+        .get(Uri.parse('${AppConfig.baseUrl}/api/products/${widget.userId}'));
     if (response.statusCode == 200) {
       final body = json.decode(response.body);
       // If the response is a single product, wrap it in a list
@@ -40,8 +41,8 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   }
 
   Future<void> _deleteProduct(int id) async {
-    final response = await http
-        .delete(Uri.parse('http://192.168.1.137:8000/api/products/$id'));
+    final response =
+        await http.delete(Uri.parse('${AppConfig.baseUrl}/api/products/$id'));
     if (response.statusCode == 200) {
       setState(() {
         _products.removeWhere((product) => product.id == id);

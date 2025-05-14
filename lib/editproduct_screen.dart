@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'models/Products.dart';
 import 'category_service.dart';
+import 'config.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -77,7 +78,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://192.168.1.137:8000/api/products/${widget.product.id}?_method=PUT'),
+            '${AppConfig.baseUrl}/api/products/${widget.product.id}?_method=PUT'),
       );
       request.fields['name'] = _nameController.text;
       request.fields['description'] = _descriptionController.text;
@@ -95,8 +96,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     } else {
       // No new image, send as JSON
       final response = await http.put(
-        Uri.parse(
-            'http://192.168.1.137:8000/api/products/${widget.product.id}'),
+        Uri.parse('${AppConfig.baseUrl}/api/products/${widget.product.id}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name': _nameController.text,
@@ -130,7 +130,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       height: 120, width: 120, fit: BoxFit.cover)
                   : (_currentImagePath != null && _currentImagePath!.isNotEmpty)
                       ? Image.network(
-                          'http://192.168.1.137:8000/storage/$_currentImagePath',
+                          'http://192.168.145.203:8000/storage/$_currentImagePath',
                           height: 120,
                           width: 120,
                           fit: BoxFit.cover)

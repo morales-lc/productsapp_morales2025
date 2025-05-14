@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'config.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -27,7 +28,7 @@ class AddProductService {
     required int userId,
     File? image, // 👈 optional image file
   }) async {
-    final url = Uri.parse('http://192.168.1.137:8000/api/products');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/products');
     var request = http.MultipartRequest('POST', url);
     request.fields['name'] = name;
     request.fields['description'] = description;

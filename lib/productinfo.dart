@@ -4,6 +4,7 @@ import 'language_model.dart';
 import 'background_model.dart';
 import 'package:provider/provider.dart';
 import 'btn_productinfo.dart';
+import 'config.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -15,7 +16,7 @@ class ProductDetailsScreen extends StatelessWidget {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     String imagePath;
     if (product["image_path"] != null) {
-      imagePath = 'http://192.168.1.137:8000/storage/${product["image_path"]}';
+      imagePath = '${AppConfig.baseUrl}/storage/${product["image_path"]}';
     } else if (product["image"] != null) {
       imagePath = product["image"].toString();
     } else {

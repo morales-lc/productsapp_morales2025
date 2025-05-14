@@ -11,6 +11,7 @@ import 'myproduct_screen.dart';
 import 'productinfo.dart';
 import 'settings.dart';
 import 'package:provider/provider.dart';
+import 'config.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadProducts() async {
     try {
       final response = await http
-          .get(Uri.parse('http://192.168.1.137:8000/api/products?all=1'));
+          .get(Uri.parse('${AppConfig.baseUrl}/api/products?all=1'));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final raw = jsonData['data'] ?? jsonData;
@@ -96,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
               product['image_path'].toString().isNotEmpty;
           final imageWidget = hasImage
               ? Image.network(
-                  'http://192.168.1.137:8000/storage/${product['image_path']}',
+                  '${AppConfig.baseUrl}/storage/${product['image_path']}',
                   height: 100,
                   width: 130,
                   fit: BoxFit.cover,
@@ -190,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (idx >= list.length) return 'assets/product_placeholder.png';
     final p = list[idx];
     if (p['image_path'] != null && p['image_path'].toString().isNotEmpty) {
-      return 'http://192.168.1.137:8000/storage/${p['image_path']}';
+      return '${AppConfig.baseUrl}/storage/${p['image_path']}';
     }
     return 'assets/product_placeholder.png';
   }

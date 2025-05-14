@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'config.dart';
 
 class CategoryService {
   static Future<List<Map<String, dynamic>>> getCategories() async {
-    final url = Uri.parse('http://192.168.1.137:8000/api/categories');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/categories');
 
     try {
       final response = await http.get(url);

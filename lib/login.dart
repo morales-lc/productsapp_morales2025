@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _testConnection() async {
     try {
-      final response = await http.get(Uri.parse('http://192.168.1.137:8000'));
+      final response = await http.get(Uri.parse(AppConfig.baseUrl));
       debugPrint('Status: ${response.statusCode}');
       debugPrint('Body: ${response.body}');
     } catch (e) {
@@ -176,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             try {
                               final response = await http.post(
                                 Uri.parse(
-                                    'http://192.168.1.137:8000/api/auth/login'),
+                                    '${AppConfig.baseUrl}/api/auth/login'),
                                 headers: {
                                   'Content-Type':
                                       'application/json; charset=UTF-8',
