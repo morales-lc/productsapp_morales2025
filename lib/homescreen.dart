@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> allProducts = [];
+  List<Map<String, dynamic>> categories = [];
   bool isLoading = true;
   String? userName;
   String? userEmail;
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     loadProducts();
+    loadCategories();
     loadUserInfo();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showWelcomeDialog();
@@ -54,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadProducts() async {
     try {
-      final response = await http
-          .get(Uri.parse('${AppConfig.baseUrl}/api/products?all=1'));
+      final response =
+          await http.get(Uri.parse('${AppConfig.baseUrl}/api/products?all=1'));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final raw = jsonData['data'] ?? jsonData;
@@ -71,6 +73,27 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print('Failed to load products: $e');
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      final response =
+          await http.get(Uri.parse('${AppConfig.baseUrl}/api/categories'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          categories = data
+              .map<Map<String, dynamic>>((item) => {
+                    'id': item['id'],
+                    'name': item['name'],
+                    'image_path': item['image_path'],
+                  })
+              .toList();
+        });
+      }
+    } catch (e) {
+      print('Failed to load categories: $e');
     }
   }
 
@@ -95,7 +118,11 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           final hasImage = product['image_path'] != null &&
               product['image_path'].toString().isNotEmpty;
-          final imageWidget = hasImage
+          final imageWidget = hasImage &&
+                  !product['image_path']
+                      .toString()
+                      .toLowerCase()
+                      .endsWith('.asset')
               ? Image.network(
                   '${AppConfig.baseUrl}/storage/${product['image_path']}',
                   height: 100,
@@ -119,9 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: ProductItem(
                 imageWidget: imageWidget,
-                name: product['name'],
-                description: product['description'],
-                price: '₱${product['price']}',
+                name: product['name']?.toString() ?? '',
+                description: product['description']?.toString() ?? '',
+                price: '₱${product['price']?.toString() ?? ''}',
               ),
             ),
           );
@@ -198,17 +225,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String getProductPrice(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
-    return '₱${list[idx]['price'] ?? ''}';
+    return '₱${list[idx]['price']?.toString() ?? ''}';
   }
 
   String getProductName(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
-    return list[idx]['name'] ?? '';
+    return list[idx]['name']?.toString() ?? '';
   }
 
   String getProductDesc(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
-    return list[idx]['description'] ?? '';
+    return list[idx]['description']?.toString() ?? '';
   }
 
   void _navigateToProductInfo(List<Map<String, dynamic>> list, int idx) {
@@ -338,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : RefreshIndicator(
               onRefresh: () async {
                 await loadProducts();
+                await loadCategories();
                 await loadUserInfo();
               },
               child: SingleChildScrollView(
@@ -394,27 +422,70 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget categoryGrid() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CategoryItem(
-                title: "Mobile and Gadgets", imagePath: "assets/mobile.jpg"),
-            CategoryItem(title: "Men's Apparel", imagePath: "assets/men.jpg"),
-          ],
+    // Shuffle and take only 4 categories
+    final List<Map<String, dynamic>> shuffled =
+        List<Map<String, dynamic>>.from(categories)..shuffle();
+    final List<Map<String, dynamic>> displayCategories =
+        shuffled.take(4).toList();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 1.4, // slightly wider
         ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CategoryItem(
-                title: "Women's Apparel", imagePath: "assets/women.jpg"),
-            CategoryItem(
-                title: "Kitchen Appliances", imagePath: "assets/kitchen.jpg"),
-          ],
-        ),
-      ],
+        itemCount: displayCategories.length,
+        itemBuilder: (context, index) {
+          final cat = displayCategories[index];
+          String imagePath = cat['image_path'] != null &&
+                  cat['image_path'].toString().isNotEmpty
+              ? '${AppConfig.baseUrl}/storage/${cat['image_path']}'
+              : 'assets/product_placeholder.png';
+          return Card(
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {}, // You can add navigation or action here
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: imagePath.startsWith('http')
+                          ? Image.network(
+                              imagePath,
+                              height: 160,
+                              width: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Image.asset('assets/product_placeholder.png',
+                                      height: 60, width: 90, fit: BoxFit.cover),
+                            )
+                          : Image.asset(imagePath,
+                              height: 60, width: 90, fit: BoxFit.cover),
+                    ),
+                    SizedBox(height: 8),
+                    Text(cat['name'] ?? '',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -475,11 +546,25 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNetwork = imagePath.startsWith('http');
     return SizedBox(
       width: 200,
       child: Column(
         children: [
-          Image.asset(imagePath, height: 100, width: 200, fit: BoxFit.cover),
+          isNetwork
+              ? Image.network(
+                  imagePath,
+                  height: 100,
+                  width: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/product_placeholder.png',
+                      height: 100,
+                      width: 200,
+                      fit: BoxFit.cover),
+                )
+              : Image.asset(imagePath,
+                  height: 100, width: 200, fit: BoxFit.cover),
           SizedBox(height: 5),
           Text(title,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -508,23 +593,22 @@ class RecommendedProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     return SizedBox(
-      width: 200,
+      width: 240, // wider
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           imagePath.startsWith('http')
               ? Image.network(imagePath,
-                  height: 120,
-                  width: 200,
+                  height: 170, // higher
+                  width: 240, // wider
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Image.asset(
                       'assets/product_placeholder.png',
-                      height: 200,
-                      width: 200,
-                      fit: BoxFit.cover // Ensure placeholder fits
-                      ))
+                      height: 170,
+                      width: 240,
+                      fit: BoxFit.cover))
               : Image.asset(imagePath,
-                  height: 120, width: 200, fit: BoxFit.cover),
+                  height: 170, width: 240, fit: BoxFit.cover),
           Text(name ?? "Product title",
               style: TextStyle(fontWeight: FontWeight.bold)),
           Text(description ?? "Product description",
