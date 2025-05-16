@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'homescreen.dart';
-import 'language_model.dart';
-import 'background_model.dart';
+import 'models/language_model.dart';
+import 'models/background_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'addproduct.dart';
-import 'background_model.dart';
-import 'language_model.dart';
+import 'models/background_model.dart';
+import 'models/language_model.dart';
 import 'login.dart';
 import 'myproduct_screen.dart';
 import 'productinfo.dart';
 import 'settings.dart';
 import 'package:provider/provider.dart';
 import 'config.dart';
+import 'category_products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -451,7 +452,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () {}, // You can add navigation or action here
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CategoryProductsScreen(
+                      initialCategoryId: cat['id'],
+                      initialCategoryName: cat['name'],
+                    ),
+                  ),
+                );
+              }, // You can add navigation or action here
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(

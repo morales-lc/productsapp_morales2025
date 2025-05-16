@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'language_model.dart';
-import 'background_model.dart';
+import 'models/language_model.dart';
+import 'models/background_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -254,7 +254,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           price: priceController.text,
                           categoryId: int.parse(selectedCategory!),
                           userId: userId,
-                          image: _image, // 👈 pass to service
+                          image: _image, //  pass to service
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(

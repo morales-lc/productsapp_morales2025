@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'login.dart';
-import 'background_model.dart';
-import 'language_model.dart';
+import 'models/background_model.dart';
+import 'models/language_model.dart';
 
 void main() {
   runApp(
