@@ -115,69 +115,141 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('Edit Product',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
+        backgroundColor: theme.colorScheme.primary,
+        elevation: 1,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: _pickedImage != null
-                  ? Image.file(_pickedImage!,
-                      height: 120, width: 120, fit: BoxFit.cover)
-                  : (_currentImagePath != null && _currentImagePath!.isNotEmpty)
-                      ? Image.network(
-                          'http://192.168.145.203:8000/storage/$_currentImagePath',
-                          height: 120,
-                          width: 120,
-                          fit: BoxFit.cover)
-                      : Image.asset('assets/product_placeholder.png',
-                          height: 120, width: 120, fit: BoxFit.cover),
-            ),
-            TextButton(
-              onPressed: _pickImage,
-              child: Text('Change Image'),
-            ),
-            TextField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name')),
-            TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description')),
-            TextField(
-                controller: _priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.number),
-            SizedBox(height: 10),
-            _isLoadingCategories
-                ? CircularProgressIndicator()
-                : DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Category',
-                      border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: _pickedImage != null
+                          ? Image.file(_pickedImage!,
+                              height: 140, width: 140, fit: BoxFit.cover)
+                          : (_currentImagePath != null &&
+                                  _currentImagePath!.isNotEmpty)
+                              ? Image.network(
+                                  '${AppConfig.baseUrl}/storage/$_currentImagePath',
+                                  height: 140,
+                                  width: 140,
+                                  fit: BoxFit.cover)
+                              : Image.asset('assets/product_placeholder.png',
+                                  height: 140, width: 140, fit: BoxFit.cover),
                     ),
-                    value: _selectedCategoryId,
-                    items: _categories.map((category) {
-                      return DropdownMenuItem<String>(
-                        value: category['id'].toString(),
-                        child: Text(category['name']),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedCategoryId = value;
-                      });
-                    },
-                  ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateProduct,
-              child: Text('Update'),
-            ),
-          ],
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Material(
+                        color: theme.colorScheme.primary,
+                        shape: CircleBorder(),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(30),
+                          onTap: _pickImage,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(Icons.camera_alt,
+                                color: Colors.white, size: 22),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 18),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Product Name',
+                  prefixIcon: Icon(Icons.label_outline),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+              ),
+              SizedBox(height: 14),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  prefixIcon: Icon(Icons.description_outlined),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+              ),
+              SizedBox(height: 14),
+              TextField(
+                controller: _priceController,
+                decoration: InputDecoration(
+                  labelText: 'Price',
+                  prefixIcon: Icon(Icons.attach_money),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              SizedBox(height: 14),
+              _isLoadingCategories
+                  ? Center(child: CircularProgressIndicator())
+                  : DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Category',
+                        prefixIcon: Icon(Icons.category_outlined),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                      ),
+                      value: _selectedCategoryId,
+                      items: _categories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCategoryId = value;
+                        });
+                      },
+                    ),
+              SizedBox(height: 28),
+              ElevatedButton.icon(
+                onPressed: _updateProduct,
+                icon: Icon(Icons.save),
+                label: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Text('Update', style: TextStyle(fontSize: 16)),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 2,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

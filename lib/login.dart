@@ -18,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -35,6 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       debugPrint('Connection failed: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,20 +84,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 20),
 
-                      // Username Field
+                      // Email Field
                       Text(
-                        "User name",
+                        "Email",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 5),
                       TextField(
-                        controller:
-                            _usernameController, //TextController for username
+                        controller: _emailController, //TextController for email
+                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: isFilipino
-                              ? "Ilagay ang User name"
-                              : "Enter User name",
-                          prefixIcon: Icon(Icons.person),
+                          hintText:
+                              isFilipino ? "Ilagay ang Email" : "Enter Email",
+                          prefixIcon: Icon(Icons.email),
                           filled: true,
                           fillColor: Colors.grey[200],
                           border: OutlineInputBorder(
@@ -163,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.symmetric(vertical: 14),
                           ),
                           onPressed: () async {
-                            if (_usernameController.text.isEmpty ||
+                            if (_emailController.text.isEmpty ||
                                 _passwordController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -183,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'application/json; charset=UTF-8',
                                 },
                                 body: jsonEncode({
-                                  'username': _usernameController.text,
+                                  'email': _emailController.text,
                                   'password': _passwordController.text,
                                 }),
                               );
@@ -194,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 final username =
                                     responseData['user']['username'];
                                 final email = responseData['user']['email'];
+                                final token = responseData['access_token'];
 
                                 final prefs =
                                     await SharedPreferences.getInstance();
@@ -202,6 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'user_name', username ?? 'User Name');
                                 await prefs.setString(
                                     'user_email', email ?? 'user@example.com');
+                                await prefs.setString(
+                                    'access_token', token ?? '');
 
                                 if (!mounted) return;
 
@@ -210,12 +221,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => HomeScreen()),
                                 );
-                              } else {
+                              } else if (response.statusCode == 422) {
+                                // Validation error
+                                final errorData = jsonDecode(response.body);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(errorData['message'] ??
+                                        (isFilipino
+                                            ? "May error sa input."
+                                            : "Validation error.")),
+                                  ),
+                                );
+                              } else if (response.statusCode == 401 ||
+                                  response.statusCode == 403) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(isFilipino
                                         ? "Maling kredensyal."
                                         : "Invalid credentials."),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(isFilipino
+                                        ? "May problema sa server."
+                                        : "Server error."),
                                   ),
                                 );
                               }

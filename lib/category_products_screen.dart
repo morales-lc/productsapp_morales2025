@@ -75,44 +75,85 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Color accent = Theme.of(context).colorScheme.primary;
     return Scaffold(
       appBar: AppBar(
-        title: Text(selectedCategoryName ?? "Category"),
+        title: Text(
+          selectedCategoryName ?? "Category",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: accent,
+        foregroundColor: Colors.white,
+        elevation: 2,
       ),
+      backgroundColor: const Color(0xFFF6F8FA),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 // Category selector
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton<int>(
-                    value: selectedCategoryId,
-                    items: categories
-                        .map((cat) => DropdownMenuItem<int>(
-                              value: cat['id'],
-                              child: Text(cat['name']),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        loadProductsForCategory(value);
-                      }
-                    },
+                  padding: const EdgeInsets.all(12.0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          value: selectedCategoryId,
+                          isExpanded: true,
+                          icon: Icon(Icons.arrow_drop_down, color: accent),
+                          items: categories
+                              .map((cat) => DropdownMenuItem<int>(
+                                    value: cat['id'],
+                                    child: Text(
+                                      cat['name'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: accent),
+                                    ),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              loadProductsForCategory(value);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 // Products grid/list
                 Expanded(
                   child: products.isEmpty
-                      ? Center(child: Text("No products found."))
+                      ? const Center(
+                          child: Text(
+                            "No products found.",
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        )
                       : GridView.builder(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(12),
                           gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            childAspectRatio: 0.7,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                            childAspectRatio: 0.68,
                           ),
                           itemCount: products.length,
                           itemBuilder: (context, index) {
@@ -120,22 +161,34 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                             final hasImage = product['image_path'] != null &&
                                 product['image_path'].toString().isNotEmpty;
                             final imageWidget = hasImage
-                                ? Image.network(
-                                    '${AppConfig.baseUrl}/storage/${product['image_path']}',
-                                    height: 120,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error,
-                                            stackTrace) =>
-                                        Image.asset(
-                                            'assets/product_placeholder.png',
-                                            height: 120,
-                                            fit: BoxFit.cover),
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                    child: Image.network(
+                                      '${AppConfig.baseUrl}/storage/${product['image_path']}',
+                                      height: 140,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          Image.asset(
+                                              'assets/product_placeholder.png',
+                                              height: 140,
+                                              fit: BoxFit.cover),
+                                    ),
                                   )
-                                : Image.asset('assets/product_placeholder.png',
-                                    height: 120, fit: BoxFit.cover);
-                            return Card(
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                    child: Image.asset(
+                                        'assets/product_placeholder.png',
+                                        height: 140,
+                                        fit: BoxFit.cover),
+                                  );
+                            return Material(
+                              color: Colors.transparent,
                               child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -145,41 +198,61 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                                     ),
                                   );
                                 },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    imageWidget,
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        product['name'] ?? '',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 4),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: Text(
-                                        product['description'] ?? '',
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      imageWidget,
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            12, 12, 12, 4),
+                                        child: Text(
+                                          product['name'] ?? '',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '₱${product['price']?.toString() ?? ''}',
-                                        style: TextStyle(
-                                            color: Colors.teal,
-                                            fontWeight: FontWeight.bold),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
+                                        child: Text(
+                                          product['description'] ?? '',
+                                          style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const Spacer(),
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Text(
+                                          '₱${product['price']?.toString() ?? ''}',
+                                          style: TextStyle(
+                                              color: accent,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

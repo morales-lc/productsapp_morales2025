@@ -27,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   String? userName;
   String? userEmail;
+  int _selectedIndex = 0;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -275,13 +277,141 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _getBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildHomeBody();
+      case 1:
+        return FutureBuilder<int?>(
+          future: _getUserId(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            final userId = snapshot.data;
+            if (userId == null) {
+              return Center(child: Text("No user logged in."));
+            }
+            return MyProductsScreen(userId: userId);
+          },
+        );
+      case 2:
+        return SettingsScreen();
+      default:
+        return _buildHomeBody();
+    }
+  }
+
+  Future<int?> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('user_id');
+  }
+
+  Widget _buildHomeBody() {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     int split = (allProducts.length / 2).ceil();
     final productsSection = allProducts.take(split).toList();
     final bestSellersSection = allProducts.skip(split).toList();
+
+    // Filter products by search query
+    final filteredProducts = _searchQuery.isEmpty
+        ? allProducts
+        : allProducts
+            .where((p) =>
+                (p['name'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()) ||
+                (p['description'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()))
+            .toList();
+
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : RefreshIndicator(
+            onRefresh: () async {
+              await loadProducts();
+              await loadCategories();
+              await loadUserInfo();
+            },
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  // --- Search Bar ---
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: isFilipino
+                            ? "Maghanap ng produkto..."
+                            : "Search products...",
+                        prefixIcon: Icon(Icons.search),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(vertical: 0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(
+                              color: backgroundModel.accent, width: 2),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
+                    ),
+                  ),
+                  // --- Banner ---
+                  Image.asset("assets/banner.jpg",
+                      height: 300, width: double.infinity, fit: BoxFit.cover),
+                  SizedBox(height: 20),
+                  sectionTitle(isFilipino ? "Mga Produkto" : "Products"),
+                  productList(
+                    filteredProducts.take(split).toList(),
+                  ),
+                  sectionTitleWithAction(
+                    isFilipino ? "Pinakamabenta" : "Best Seller",
+                    isFilipino ? "Ipakita lahat >" : "See all >",
+                  ),
+                  productList(
+                    filteredProducts.skip(split).toList(),
+                  ),
+                  sectionTitle(isFilipino ? "Mga Kategorya" : "Categories"),
+                  categoryGrid(),
+                  SizedBox(height: 24), // Add spacing before recommended
+                  sectionTitle(isFilipino
+                      ? "Inirerekomenda para sa iyo"
+                      : "Recommended for you"),
+                  recommendedGrid(filteredProducts),
+                  SizedBox(height: 24), // Add spacing before trending
+                  trendingProductsSection(filteredProducts),
+                  hotDealsSection(filteredProducts),
+                ],
+              ),
+            ),
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final backgroundModel = Provider.of<Backgroundmodel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -293,6 +423,48 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(width: 15),
           CircleAvatar(backgroundImage: AssetImage("assets/profile.jpg")),
           SizedBox(width: 15),
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.red),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              final token = prefs.getString('access_token');
+              if (token == null || token.isEmpty) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+                return;
+              }
+              try {
+                final response = await http.post(
+                  Uri.parse('${AppConfig.baseUrl}/api/auth/logout'),
+                  headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Authorization': 'Bearer $token',
+                  },
+                );
+                if (response.statusCode == 200) {
+                  await prefs.remove('access_token');
+                  await prefs.remove('user_id');
+                  await prefs.remove('user_name');
+                  await prefs.remove('user_email');
+                  if (!mounted) return;
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Logout failed.')),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Connection error.')),
+                );
+              }
+            },
+          ),
         ],
       ),
       drawer: Drawer(
@@ -318,7 +490,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                setState(() => _selectedIndex = 0);
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.add_box),
@@ -330,74 +505,86 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.inventory),
               title: Text(isFilipino ? "Iyong Mga Produkto" : 'My Products'),
               onTap: () async {
+                setState(() => _selectedIndex = 1);
                 Navigator.pop(context);
-                final prefs = await SharedPreferences.getInstance();
-                final userId = prefs.getInt('user_id');
-                if (userId != null) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyProductsScreen(userId: userId)));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(isFilipino
-                          ? "Walang naka-log in na user."
-                          : "No user logged in.")));
-                }
               },
             ),
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => SettingsScreen())),
+              onTap: () {
+                setState(() => _selectedIndex = 2);
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text(isFilipino ? "Mag-Logout" : 'Logout'),
-              onTap: () => Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => LoginScreen())),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                final token = prefs.getString('access_token');
+                if (token == null || token.isEmpty) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => LoginScreen()),
+                  );
+                  return;
+                }
+                try {
+                  final response = await http.post(
+                    Uri.parse('${AppConfig.baseUrl}/api/auth/logout'),
+                    headers: {
+                      'Content-Type': 'application/json; charset=UTF-8',
+                      'Authorization': 'Bearer $token',
+                    },
+                  );
+                  if (response.statusCode == 200) {
+                    await prefs.remove('access_token');
+                    await prefs.remove('user_id');
+                    await prefs.remove('user_name');
+                    await prefs.remove('user_email');
+                    if (!mounted) return;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(isFilipino
+                              ? 'Nabigong mag-logout.'
+                              : 'Logout failed.')),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(isFilipino
+                            ? 'May problema sa koneksyon.'
+                            : 'Connection error.')),
+                  );
+                }
+              },
             ),
           ],
         ),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: () async {
-                await loadProducts();
-                await loadCategories();
-                await loadUserInfo();
-              },
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Image.asset("assets/banner.jpg",
-                        height: 300, width: double.infinity, fit: BoxFit.cover),
-                    SizedBox(height: 20),
-                    sectionTitle(isFilipino ? "Mga Produkto" : "Products"),
-                    productList(productsSection),
-                    sectionTitleWithAction(
-                      isFilipino ? "Pinakamabenta" : "Best Seller",
-                      isFilipino ? "Ipakita lahat >" : "See all >",
-                    ),
-                    productList(bestSellersSection),
-                    sectionTitle(isFilipino ? "Mga Kategorya" : "Categories"),
-                    categoryGrid(),
-                    sectionTitle(isFilipino
-                        ? "Inirerekomenda para sa iyo"
-                        : "Recommended for you"),
-                    recommendedGrid(allProducts),
-                    trendingProductsSection(allProducts),
-                    hotDealsSection(allProducts),
-                  ],
-                ),
-              ),
-            ),
+      body: _getBody(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (idx) {
+          setState(() {
+            _selectedIndex = idx;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.inventory), label: 'My Products'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+      ),
     );
   }
 
@@ -634,7 +821,9 @@ class RecommendedProductItem extends StatelessWidget {
               style: TextStyle(
                   color: backgroundModel.textColor,
                   fontWeight: FontWeight.bold)),
-          Text("500 sold", style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text("500 sold",
+              style: TextStyle(
+                  fontSize: 12, color: const Color.fromARGB(255, 2, 206, 57))),
         ],
       ),
     );

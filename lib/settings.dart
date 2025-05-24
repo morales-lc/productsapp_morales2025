@@ -10,7 +10,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     final languageModel = Provider.of<LanguageModel>(context);
-    final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
+    final isFilipino = languageModel.isFilipino();
 
     return Scaffold(
       backgroundColor: Colors.white, // Always white background
@@ -81,44 +81,6 @@ class SettingsScreen extends StatelessWidget {
                       child: backgroundModel.theme == "purple"
                           ? Icon(Icons.check, color: Colors.white, size: 16)
                           : null,
-                    ),
-                  ),
-                ],
-              ),
-              Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: backgroundModel.secondBtn,
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(isFilipino ? "kanselahin" : "Cancel"),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: backgroundModel.accent,
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(isFilipino ? "I-save" : "Save"),
                     ),
                   ),
                 ],

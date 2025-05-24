@@ -3,7 +3,6 @@ import 'models/language_model.dart';
 import 'models/background_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'category_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -83,6 +82,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
+  // Add this to your state class
+
   @override
   void initState() {
     super.initState();
@@ -108,6 +109,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white, // Always white
+      resizeToAvoidBottomInset: true, // Allow body to resize for keyboard
       appBar: AppBar(
         backgroundColor: backgroundModel.appBar,
         title: Text(
@@ -118,7 +120,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,6 +166,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ? "Pumili ng kategorya ng produkto"
                           : "Select product category",
                       border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: 1.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: backgroundModel.accent, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
                     value: selectedCategory,
                     items: categories.map((category) {
@@ -184,6 +197,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
               decoration: InputDecoration(
                 labelText: isFilipino ? "Pangalan ng produkto" : "Product name",
                 border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey, width: 1.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: backgroundModel.accent, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
             ),
             SizedBox(height: 10),
@@ -195,6 +219,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ? "Deskripsyon ng produkto"
                     : "Product description",
                 border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey, width: 1.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: backgroundModel.accent, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
             ),
             SizedBox(height: 10),
@@ -204,9 +239,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
               decoration: InputDecoration(
                 labelText: isFilipino ? "Presyo" : "Price",
                 border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey, width: 1.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: backgroundModel.accent, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
             ),
-            Spacer(),
+            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(

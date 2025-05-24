@@ -4,12 +4,12 @@ class Backgroundmodel extends ChangeNotifier {
   String _currentTheme = "default";
 
   // Theme colors
-  Color _scaffoldBgColor = Colors.pinkAccent;
+  Color _scaffoldBgColor = const Color.fromARGB(255, 252, 241, 245);
   Color _appBarColor = Colors.pinkAccent;
   Color _drawerHeaderColor = Colors.pinkAccent;
   Color _buttonColor = Colors.pink;
   Color _accentColor = Colors.pinkAccent;
-  Color _textColor = Color.fromRGBO(255, 64, 129, 1); // default text color
+  Color _textColor = const Color.fromARGB(255, 26, 99, 246);
   Color _secondBtn = Color.fromRGBO(0, 105, 92, 1);
   Color _buyBtn = Color.fromRGBO(0, 105, 95, 1);
   Color _cartBtn = Color.fromRGBO(240, 155, 27, 1);
@@ -22,7 +22,8 @@ class Backgroundmodel extends ChangeNotifier {
     _drawerHeaderColor = Colors.deepPurple;
     _buttonColor = const Color.fromARGB(255, 95, 49, 180); // lavender
     _accentColor = Colors.deepPurple;
-    _textColor = Color.fromARGB(255, 95, 49, 180); // white text color
+    _textColor = const Color.fromARGB(
+        255, 245, 37, 37); // white text for contrast with purple appbar
     _secondBtn = Color.fromRGBO(25, 91, 246, 1);
     _buyBtn = Color.fromRGBO(255, 119, 14, 1);
     _cartBtn = Color.fromRGBO(255, 14, 14, 1);
@@ -33,12 +34,13 @@ class Backgroundmodel extends ChangeNotifier {
 
   void reset() {
     _currentTheme = "default";
-    _scaffoldBgColor = Colors.pinkAccent;
+    _scaffoldBgColor = const Color.fromARGB(255, 252, 241, 245);
     _appBarColor = Colors.pinkAccent;
     _drawerHeaderColor = Colors.pinkAccent;
     _buttonColor = Colors.pink;
     _accentColor = Colors.pinkAccent;
-    _textColor = Color.fromRGBO(255, 64, 129, 1);
+    _textColor = const Color.fromARGB(
+        255, 26, 99, 246); // white text for contrast with pink appbar
     _secondBtn = Color.fromRGBO(0, 105, 92, 1);
     _buyBtn = Color.fromRGBO(0, 105, 95, 1);
     _cartBtn = Color.fromRGBO(240, 155, 27, 1);
