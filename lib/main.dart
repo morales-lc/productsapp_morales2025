@@ -28,12 +28,11 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: LoginScreen(),
           theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white, // Fixed white background
+            scaffoldBackgroundColor: Colors.white,
             appBarTheme: AppBarTheme(
               backgroundColor: bgModel.appBar,
               foregroundColor: Colors.white,
             ),
-
             colorScheme: ColorScheme.fromSwatch().copyWith(
               secondary: bgModel.accent,
             ),

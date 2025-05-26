@@ -25,18 +25,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _testConnection();
+    //_testConnection(); // Uncomment this line to test the connection
   }
 
-  void _testConnection() async {
-    try {
-      final response = await http.get(Uri.parse(AppConfig.baseUrl));
-      debugPrint('Status: ${response.statusCode}');
-      debugPrint('Body: ${response.body}');
-    } catch (e) {
-      debugPrint('Connection failed: $e');
-    }
-  }
+  // Uncomment this method to test the connection
+  // void _testConnection() async {
+  //   try {
+  //     final response = await http.get(Uri.parse(AppConfig.baseUrl));
+  //     debugPrint('Status: ${response.statusCode}');
+  //     debugPrint('Body: ${response.body}');
+  //   } catch (e) {
+  //     debugPrint('Connection failed: $e');
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -46,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // ==================== BUILD ====================
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
@@ -181,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                               return;
                             }
-
+                            // Perform login request
                             try {
                               final response = await http.post(
                                 Uri.parse(
@@ -196,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }),
                               );
 
+                              // Check if the response is successful
                               if (response.statusCode == 200) {
                                 final responseData = jsonDecode(response.body);
                                 final userId = responseData['user']['id'];
@@ -203,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     responseData['user']['username'];
                                 final email = responseData['user']['email'];
                                 final token = responseData['access_token'];
-
+                                // Save user data to SharedPreferences
                                 final prefs =
                                     await SharedPreferences.getInstance();
                                 await prefs.setInt('user_id', userId);
@@ -219,34 +222,56 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomeScreen()),
+                                    builder: (context) => HomeScreen(),
+                                    settings:
+                                        RouteSettings(arguments: 'fromLogin'),
+                                  ),
                                 );
                               } else if (response.statusCode == 422) {
                                 // Validation error
                                 final errorData = jsonDecode(response.body);
+                                String msg = errorData['message'] ??
+                                    (isFilipino
+                                        ? "May error sa input."
+                                        : "Validation error.");
+                                if (errorData['errors'] != null &&
+                                    errorData['errors'] is Map) {
+                                  final errors = errorData['errors'] as Map;
+                                  msg = errors.values.first[0] ?? msg;
+                                }
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(errorData['message'] ??
-                                        (isFilipino
-                                            ? "May error sa input."
-                                            : "Validation error.")),
+                                    content: Text(msg),
                                   ),
                                 );
                               } else if (response.statusCode == 401 ||
                                   response.statusCode == 403) {
+                                // Unauthorized or forbidden
+                                final errorData = jsonDecode(response.body);
+                                String msg = errorData['message'] ??
+                                    (isFilipino
+                                        ? "Maling kredensyal."
+                                        : "Invalid credentials.");
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(isFilipino
-                                        ? "Maling kredensyal."
-                                        : "Invalid credentials."),
+                                    content: Text(msg),
                                   ),
                                 );
                               } else {
+                                // Other server errors
+                                String msg = isFilipino
+                                    ? "May problema sa server."
+                                    : "Server error.";
+                                try {
+                                  final errorData = jsonDecode(response.body);
+                                  if (errorData is Map &&
+                                      errorData['message'] != null) {
+                                    msg = errorData['message'];
+                                  }
+                                } catch (_) {}
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(isFilipino
-                                        ? "May problema sa server."
-                                        : "Server error."),
+                                    content: Text(msg),
                                   ),
                                 );
                               }

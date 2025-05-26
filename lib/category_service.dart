@@ -9,8 +9,8 @@ class CategoryService {
     try {
       final response = await http.get(url);
 
-      print('GET ${url.toString()} → ${response.statusCode}');
-      print('Response body: ${response.body}');
+      //print('GET ${url.toString()} → ${response.statusCode}');
+      //print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
@@ -24,7 +24,7 @@ class CategoryService {
         throw Exception('Failed to load categories');
       }
     } catch (e) {
-      print('Exception in getCategories(): $e');
+      //print('Exception in getCategories(): $e');
       throw Exception('Network error occurred');
     }
   }

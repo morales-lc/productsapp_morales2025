@@ -10,7 +10,7 @@ import 'config.dart';
 class EditProductScreen extends StatefulWidget {
   final Product product;
 
-  const EditProductScreen({Key? key, required this.product}) : super(key: key);
+  const EditProductScreen({super.key, required this.product});
 
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
@@ -39,6 +39,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _loadCategories();
   }
 
+  // ==============================  SERVICES  ===========================
+
+  //load categories from API service
   void _loadCategories() async {
     try {
       _categories = await CategoryService.getCategories();
@@ -52,6 +55,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+  // ==============================  IMAGE PICKER  ===========================
+  //pick image from gallery
   Future<void> _pickImage() async {
     if (_isPickingImage) return;
     setState(() {
@@ -72,6 +77,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+// ==============================  UPDATE PRODUCT  ===========================
+  //update product
   Future<void> _updateProduct() async {
     if (_pickedImage != null) {
       // Send as multipart
@@ -89,9 +96,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
       if (response.statusCode == 200) {
+        if (!mounted) return;
         Navigator.pop(context);
       } else {
-        // Handle error
+        if (!mounted) return;
+        String errorMsg = 'Failed to update product.';
+        try {
+          final errorBody = json.decode(response.body);
+          if (errorBody is Map && errorBody['message'] != null) {
+            errorMsg = errorBody['message'];
+          }
+        } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg)),
+        );
       }
     } else {
       // No new image, send as JSON
@@ -106,13 +124,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
         }),
       );
       if (response.statusCode == 200) {
+        if (!mounted) return;
         Navigator.pop(context);
       } else {
-        // Handle error
+        if (!mounted) return;
+        String errorMsg = 'Failed to update product.';
+        try {
+          final errorBody = json.decode(response.body);
+          if (errorBody is Map && errorBody['message'] != null) {
+            errorMsg = errorBody['message'];
+          }
+        } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMsg)),
+        );
       }
     }
   }
 
+// ==============================  BUILD  ===========================
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

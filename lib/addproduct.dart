@@ -18,6 +18,8 @@ class AddProductScreen extends StatefulWidget {
   _AddProductScreenState createState() => _AddProductScreenState();
 }
 
+// =================== SERVICES ===================
+// add new product service
 class AddProductService {
   static Future<bool> addProduct({
     required String name,
@@ -47,6 +49,7 @@ class AddProductService {
     }
   }
 }
+// =================== ADD PRODUCT SCREEN ===================
 
 class _AddProductScreenState extends State<AddProductScreen> {
   String? selectedCategory;
@@ -57,19 +60,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   List<Map<String, dynamic>> categories = [];
   bool isLoadingCategories = true;
-
-  int mapCategoryToId(String categoryName) {
-    switch (categoryName) {
-      case "Mobile and Gadgets":
-        return 1;
-      case "Wearables":
-        return 2;
-      case "Accessories":
-        return 3;
-      default:
-        return 1; // Default fallback
-    }
-  }
 
   File? _image;
 
@@ -82,7 +72,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // Add this to your state class
+  // =================== INIT ===================
 
   @override
   void initState() {
@@ -102,6 +92,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
+  // =================== BUILD ===================
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
@@ -284,6 +275,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         );
                         return;
                       }
+                      // Check if user is logged in
                       final prefs = await SharedPreferences.getInstance();
                       final userId = prefs.getInt('user_id');
                       if (userId == null) {
@@ -292,7 +284,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         );
                         return;
                       }
-
+                      // Call the add product service
+                      // Pass the image file if it exists
                       try {
                         await AddProductService.addProduct(
                           name: productNameController.text,
@@ -303,20 +296,61 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           image: _image, //  pass to service
                         );
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(isFilipino
-                                  ? "Matagumpay na naidagdag ang produkto!"
-                                  : "Product added successfully!")),
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Row(
+                              children: [
+                                Icon(Icons.check_circle,
+                                    color: Colors.green, size: 28),
+                                SizedBox(width: 8),
+                                Text(isFilipino ? "Tagumpay!" : "Success!"),
+                              ],
+                            ),
+                            content: Text(isFilipino
+                                ? "Matagumpay na naidagdag ang produkto!"
+                                : "Product added successfully!"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text(isFilipino ? "OK" : "OK"),
+                              ),
+                            ],
+                          ),
                         );
-
-                        Navigator.pop(context);
+                        // Optionally clear fields
+                        setState(() {
+                          productNameController.clear();
+                          productDescriptionController.clear();
+                          priceController.clear();
+                          selectedCategory = null;
+                          _image = null;
+                        });
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(isFilipino
-                                  ? "Nabigo ang pagdaragdag ng produkto."
-                                  : "Failed to add product.")),
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Row(
+                              children: [
+                                Icon(Icons.error, color: Colors.red, size: 28),
+                                SizedBox(width: 8),
+                                Text(isFilipino ? "Nabigo" : "Failed"),
+                              ],
+                            ),
+                            content: Text(isFilipino
+                                ? "Nabigo ang pagdaragdag ng produkto."
+                                : "Failed to add product."),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text(isFilipino ? "OK" : "OK"),
+                              ),
+                            ],
+                          ),
                         );
                       }
                     },

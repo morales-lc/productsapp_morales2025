@@ -6,6 +6,8 @@ import 'models/language_model.dart';
 class SettingsScreen extends StatelessWidget {
   final List<String> languages = ["English", "Filipino"];
 
+  SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);

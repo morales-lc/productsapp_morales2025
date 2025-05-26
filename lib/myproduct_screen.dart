@@ -11,7 +11,7 @@ import 'models/language_model.dart';
 class MyProductsScreen extends StatefulWidget {
   final int userId;
 
-  const MyProductsScreen({Key? key, required this.userId}) : super(key: key);
+  const MyProductsScreen({super.key, required this.userId});
 
   @override
   _MyProductsScreenState createState() => _MyProductsScreenState();
@@ -19,7 +19,7 @@ class MyProductsScreen extends StatefulWidget {
 
 class _MyProductsScreenState extends State<MyProductsScreen> {
   List<Product> _products = [];
-  Set<int> _selectedProductIds = {};
+  final Set<int> _selectedProductIds = {};
 
   @override
   void initState() {

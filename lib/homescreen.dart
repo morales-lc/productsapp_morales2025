@@ -13,6 +13,7 @@ import 'settings.dart';
 import 'package:provider/provider.dart';
 import 'config.dart';
 import 'category_products_screen.dart';
+import 'search_result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,8 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String? userName;
   String? userEmail;
   int _selectedIndex = 0;
-  String _searchQuery = '';
+  final String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
+// INITIALIZE
   @override
   void initState() {
     super.initState();
@@ -74,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      print('Failed to load products: $e');
+      //print('Failed to load products: $e');
       setState(() => isLoading = false);
     }
   }
@@ -96,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      print('Failed to load categories: $e');
+      //print('Failed to load categories: $e');
     }
   }
 
@@ -107,10 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
       userEmail = prefs.getString('user_email') ?? 'user@example.com';
     });
   }
+  // --- Product List ---
 
   Widget productList(List<Map<String, dynamic>> items, {Set<int>? excludeIds}) {
     return SizedBox(
-      height: 200,
+      height: 210, // Increased from 200 to 210 to prevent bottom overflow
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
@@ -160,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // --- Category List ---
   Widget recommendedGrid(List<Map<String, dynamic>> items) {
     final random = Random();
     final recommended = List<Map<String, dynamic>>.from(items)..shuffle(random);
@@ -226,6 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'assets/product_placeholder.png';
   }
 
+// --- Product Info ---
   String getProductPrice(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
     return '₱${list[idx]['price']?.toString() ?? ''}';
@@ -311,23 +317,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     final backgroundModel = Provider.of<Backgroundmodel>(context);
     int split = (allProducts.length / 2).ceil();
-    final productsSection = allProducts.take(split).toList();
-    final bestSellersSection = allProducts.skip(split).toList();
-
-    // Filter products by search query
-    final filteredProducts = _searchQuery.isEmpty
-        ? allProducts
-        : allProducts
-            .where((p) =>
-                (p['name'] ?? '')
-                    .toString()
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()) ||
-                (p['description'] ?? '')
-                    .toString()
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()))
-            .toList();
 
     return isLoading
         ? Center(child: CircularProgressIndicator())
@@ -347,50 +336,99 @@ class _HomeScreenState extends State<HomeScreen> {
                   // --- Search Bar ---
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: isFilipino
-                            ? "Maghanap ng produkto..."
-                            : "Search products...",
-                        prefixIcon: Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: EdgeInsets.symmetric(vertical: 0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: isFilipino
+                                  ? "Maghanap ng produkto..."
+                                  : "Search products...",
+                              prefixIcon: Icon(Icons.search),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: EdgeInsets.symmetric(vertical: 0),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                    color: backgroundModel.accent, width: 2),
+                              ),
+                            ),
+                          ),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        SizedBox(width: 8),
+                        Material(
+                          color: backgroundModel.accent,
+                          shape: CircleBorder(),
+                          child: IconButton(
+                            icon:
+                                Icon(Icons.arrow_forward, color: Colors.white),
+                            onPressed: () {
+                              final query = _searchController.text.trim();
+                              if (query.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => SearchResultScreen(
+                                      query: query,
+                                      allProducts: allProducts,
+                                      categories: categories,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(
-                              color: backgroundModel.accent, width: 2),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
+                      ],
                     ),
                   ),
                   // --- Banner ---
-                  Image.asset("assets/banner.jpg",
-                      height: 300, width: double.infinity, fit: BoxFit.cover),
+                  SizedBox(
+                    height: 220,
+                    child: PageView(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.asset("assets/banner.jpg",
+                              width: double.infinity, fit: BoxFit.cover),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.asset("assets/laptop.jpg",
+                              width: double.infinity, fit: BoxFit.cover),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.asset("assets/smartwatch.jpg",
+                              width: double.infinity, fit: BoxFit.cover),
+                        ),
+                        // Add more banners as needed
+                      ],
+                    ),
+                  ),
                   SizedBox(height: 20),
                   sectionTitle(isFilipino ? "Mga Produkto" : "Products"),
                   productList(
-                    filteredProducts.take(split).toList(),
+                    allProducts.take(split).toList(),
                   ),
                   sectionTitleWithAction(
                     isFilipino ? "Pinakamabenta" : "Best Seller",
                     isFilipino ? "Ipakita lahat >" : "See all >",
                   ),
                   productList(
-                    filteredProducts.skip(split).toList(),
+                    allProducts.skip(split).toList(),
                   ),
                   sectionTitle(isFilipino ? "Mga Kategorya" : "Categories"),
                   categoryGrid(),
@@ -398,10 +436,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   sectionTitle(isFilipino
                       ? "Inirerekomenda para sa iyo"
                       : "Recommended for you"),
-                  recommendedGrid(filteredProducts),
+                  recommendedGrid(allProducts),
                   SizedBox(height: 24), // Add spacing before trending
-                  trendingProductsSection(filteredProducts),
-                  hotDealsSection(filteredProducts),
+                  trendingProductsSection(allProducts),
+                  hotDealsSection(allProducts),
                 ],
               ),
             ),
@@ -421,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Icon(Icons.notifications_none, color: Colors.black),
           SizedBox(width: 15),
-          CircleAvatar(backgroundImage: AssetImage("assets/profile.jpg")),
+          CircleAvatar(backgroundImage: AssetImage("assets/profile.png")),
           SizedBox(width: 15),
           IconButton(
             icon: Icon(Icons.logout, color: Colors.red),
@@ -454,11 +492,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 } else {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Logout failed.')),
                   );
                 }
               } catch (e) {
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Connection error.')),
                 );
@@ -477,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                      backgroundImage: AssetImage("assets/profile.jpg"),
+                      backgroundImage: AssetImage("assets/profile.png"),
                       radius: 30),
                   SizedBox(height: 10),
                   Text(userName ?? "User Name",
