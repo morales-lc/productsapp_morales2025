@@ -3,6 +3,14 @@ import 'package:provider/provider.dart';
 import 'models/language_model.dart';
 import 'models/background_model.dart';
 
+// =================== BOTTOM ACTION BUTTONS WIDGET ===================
+/// BottomActionButtons
+///
+/// Stateless widget that displays two main action buttons at the bottom of the product info screen:
+/// - "Add to Cart" (or "Idagdag sa Cart" in Filipino)
+/// - "Buy Now" (or "Bumili Na" in Filipino)
+///
+/// Uses Provider to access language and theme settings.
 class BottomActionButtons extends StatelessWidget {
   const BottomActionButtons({super.key});
 
@@ -16,6 +24,7 @@ class BottomActionButtons extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: [
+          // Add to Cart button
           Expanded(
             child: ElevatedButton.icon(
               icon: Icon(Icons.shopping_cart, color: Colors.white),
@@ -38,6 +47,7 @@ class BottomActionButtons extends StatelessWidget {
             ),
           ),
           SizedBox(width: 12),
+          // Buy Now button
           Expanded(
             child: ElevatedButton.icon(
               icon: Icon(Icons.payment, color: Colors.white),
@@ -64,3 +74,4 @@ class BottomActionButtons extends StatelessWidget {
     );
   }
 }
+// =================== END BOTTOM ACTION BUTTONS WIDGET ===================

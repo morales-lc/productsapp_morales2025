@@ -6,10 +6,15 @@ import 'productinfo.dart';
 import 'package:provider/provider.dart';
 import 'models/background_model.dart';
 
+// =================== CATEGORY PRODUCTS SCREEN ===================
+/// Screen for displaying products filtered by category.
+/// Allows users to select a category and view all products in that category.
+/// Fetches categories and products from the backend API.
 class CategoryProductsScreen extends StatefulWidget {
   final int initialCategoryId;
   final String initialCategoryName;
 
+  /// Creates a screen for a specific category and its products.
   const CategoryProductsScreen({
     super.key,
     required this.initialCategoryId,
@@ -21,10 +26,14 @@ class CategoryProductsScreen extends StatefulWidget {
 }
 
 class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
+  // List of all categories
   List<Map<String, dynamic>> categories = [];
+  // List of products for the selected category
   List<Map<String, dynamic>> products = [];
+  // Currently selected category ID and name
   int? selectedCategoryId;
   String? selectedCategoryName;
+  // Loading state
   bool isLoading = true;
 
   @override
@@ -35,11 +44,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     loadCategoriesAndProducts();
   }
 
-  // This function loads categories and products for the selected category
-  // It is called in initState and when the selected category changes
-  // It sets the loading state to true while fetching data and false when done
-  // It also updates the state with the fetched categories and products
-  // It uses the http package to make network requests to the API
+  /// Loads both categories and products for the selected category
   Future<void> loadCategoriesAndProducts() async {
     setState(() => isLoading = true);
     await loadCategories();
@@ -47,8 +52,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     setState(() => isLoading = false);
   }
 
-  // This function fetches categories from the API
-  // It uses the http package to make a GET request to the API endpoint
+  /// Loads all categories from the API
   Future<void> loadCategories() async {
     final response =
         await http.get(Uri.parse('${AppConfig.baseUrl}/api/categories'));
@@ -65,9 +69,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     }
   }
 
-  // This function fetches products for a specific category from the API
-  // It uses the http package to make a GET request to the API endpoint
-  // It takes the category ID as a parameter and updates the state with the fetched products
+  /// Loads products for a specific category from the API
   Future<void> loadProductsForCategory(int categoryId) async {
     setState(() => isLoading = true);
     final response = await http.get(
@@ -85,7 +87,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     }
   }
 
-// BUILD UI
+  // =================== BUILD UI ===================
   @override
   Widget build(BuildContext context) {
     final backgroundModel = Provider.of<Backgroundmodel>(context);
@@ -277,3 +279,4 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     );
   }
 }
+// =================== END CATEGORY PRODUCTS SCREEN ===================

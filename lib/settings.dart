@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'models/background_model.dart';
 import 'models/language_model.dart';
 
+// =================== SETTINGS SCREEN ===================
+/// Settings screen for changing app language and theme.
+/// Uses Provider for theme and language state management.
+/// Allows users to switch between English/Filipino and select app color themes.
 class SettingsScreen extends StatelessWidget {
   final List<String> languages = ["English", "Filipino"];
 
@@ -94,3 +98,4 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+// =================== END SETTINGS SCREEN ===================

@@ -17,6 +17,12 @@ void main() {
   );
 }
 
+// =================== MAIN APP ENTRY ===================
+/// MyApp
+///
+/// The root widget of the application. Sets up providers for theme and language,
+/// and configures the MaterialApp with the current theme and home screen.
+/// All global app-level configuration and theming is handled here.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -42,3 +48,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+// =================== END MAIN APP ENTRY ===================

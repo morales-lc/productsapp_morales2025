@@ -7,9 +7,17 @@ import 'models/Products.dart';
 import 'category_service.dart';
 import 'config.dart';
 
+// =================== EDIT PRODUCT SCREEN ===================
+/// EditProductScreen
+///
+/// Stateful widget for editing an existing product.
+/// Allows updating product details and image, and saves changes to the backend.
+/// Fetches categories from the API and provides a form for editing product info.
 class EditProductScreen extends StatefulWidget {
+  /// The product to be edited.
   final Product product;
 
+  /// Creates an edit screen for the given product.
   const EditProductScreen({super.key, required this.product});
 
   @override
@@ -17,14 +25,21 @@ class EditProductScreen extends StatefulWidget {
 }
 
 class _EditProductScreenState extends State<EditProductScreen> {
+  // Controllers for product form fields
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late TextEditingController _priceController;
+  // Currently selected category ID
   String? _selectedCategoryId;
+  // List of categories fetched from the API
   List<Map<String, dynamic>> _categories = [];
+  // Loading state for categories
   bool _isLoadingCategories = true;
+  // Selected image file
   File? _pickedImage;
+  // Current image path (if any)
   String? _currentImagePath;
+  // Loading state for image picker
   bool _isPickingImage = false;
 
   @override
@@ -41,7 +56,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   // ==============================  SERVICES  ===========================
 
-  //load categories from API service
+  /// Loads categories from the API service
   void _loadCategories() async {
     try {
       _categories = await CategoryService.getCategories();
@@ -56,7 +71,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   // ==============================  IMAGE PICKER  ===========================
-  //pick image from gallery
+  /// Picks an image from the gallery
   Future<void> _pickImage() async {
     if (_isPickingImage) return;
     setState(() {
@@ -78,7 +93,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
 // ==============================  UPDATE PRODUCT  ===========================
-  //update product
+  /// Updates the product on the backend (with or without image)
   Future<void> _updateProduct() async {
     if (_pickedImage != null) {
       // Send as multipart
@@ -285,3 +300,4 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 }
+// =================== END EDIT PRODUCT SCREEN ===================

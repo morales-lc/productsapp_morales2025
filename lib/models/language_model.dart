@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+// =================== LANGUAGE MODEL ===================
+/// LanguageModel
+///
+/// ChangeNotifier for managing the app's language state.
+/// Allows switching between English and Filipino, and notifies listeners on change.
 class LanguageModel extends ChangeNotifier {
   String _language = "English"; // default
 
@@ -12,3 +17,4 @@ class LanguageModel extends ChangeNotifier {
 
   bool isFilipino() => _language == "Filipino";
 }
+// =================== END LANGUAGE MODEL ===================

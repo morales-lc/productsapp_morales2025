@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+// =================== BACKGROUND MODEL ===================
+/// Backgroundmodel
+///
+/// ChangeNotifier for managing app theme colors and styles.
+/// Supports switching between default and purple themes, and provides color getters for UI widgets.
+/// Notifies listeners when the theme is changed.
 class Backgroundmodel extends ChangeNotifier {
   String _currentTheme = "default";
 
@@ -61,3 +67,4 @@ class Backgroundmodel extends ChangeNotifier {
 
   String get theme => _currentTheme;
 }
+// =================== END BACKGROUND MODEL ===================

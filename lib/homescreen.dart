@@ -1,3 +1,13 @@
+// =================== HOMESCREEN ===================
+// Main home screen for the products app. Handles product listing, categories, search, navigation, and user info.
+// Uses Provider for theme and language, and manages state for products and categories.
+// Contains all main sections: search, banners, product lists, categories, recommendations, trending, and hot deals.
+// Also handles navigation to product details, category screens, and logout logic.
+//
+// Author: [Your Name]
+// Date: [Today's Date]
+//
+// =================== IMPORTS ===================
 import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -16,6 +26,7 @@ import 'category_products_screen.dart';
 import 'search_result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  /// Main entry point for the home page of the app.
   const HomeScreen({super.key});
 
   @override
@@ -23,16 +34,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // List of all products fetched from the API
   List<Map<String, dynamic>> allProducts = [];
+  // List of all categories fetched from the API
   List<Map<String, dynamic>> categories = [];
+  // Loading state for the home screen
   bool isLoading = true;
+  // User info
   String? userName;
   String? userEmail;
+  // Current selected index for bottom navigation
   int _selectedIndex = 0;
+  // Search query for filtering products
   final String _searchQuery = '';
+  // Controller for the search bar
   final TextEditingController _searchController = TextEditingController();
 
-// INITIALIZE
+  // =================== INIT ===================
   @override
   void initState() {
     super.initState();
@@ -44,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Shows a welcome dialog after login
   void showWelcomeDialog() {
     showDialog(
       context: context,
@@ -60,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Loads all products from the API
   Future<void> loadProducts() async {
     try {
       final response =
@@ -82,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Loads all categories from the API
   Future<void> loadCategories() async {
     try {
       final response =
@@ -103,15 +124,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Loads user info from shared preferences
   Future<void> loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      userName = prefs.getString('user_name') ?? 'User Name';
       userEmail = prefs.getString('user_email') ?? 'user@example.com';
     });
   }
-  // --- Product List ---
 
+  // =================== UI WIDGETS ===================
+
+  /// Horizontal product list for sections like Best Sellers, New Arrivals, etc.
   Widget productList(List<Map<String, dynamic>> items, {Set<int>? excludeIds}) {
     return SizedBox(
       height: 210, // Increased from 200 to 210 to prevent bottom overflow
@@ -164,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- Category List ---
+  /// Grid of recommended products (2x2)
   Widget recommendedGrid(List<Map<String, dynamic>> items) {
     final random = Random();
     final recommended = List<Map<String, dynamic>>.from(items)..shuffle(random);
@@ -222,6 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Gets the image URL or placeholder for a product
   String getProductImage(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return 'assets/product_placeholder.png';
     final p = list[idx];
@@ -231,22 +255,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'assets/product_placeholder.png';
   }
 
-// --- Product Info ---
+  /// Gets the price string for a product
   String getProductPrice(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
     return '₱${list[idx]['price']?.toString() ?? ''}';
   }
 
+  /// Gets the name for a product
   String getProductName(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
     return list[idx]['name']?.toString() ?? '';
   }
 
+  /// Gets the description for a product
   String getProductDesc(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return '';
     return list[idx]['description']?.toString() ?? '';
   }
 
+  /// Navigates to the product info screen for a given product
   void _navigateToProductInfo(List<Map<String, dynamic>> list, int idx) {
     if (idx >= list.length) return;
     final product = list[idx];
@@ -258,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Section for trending products
   Widget trendingProductsSection(List<Map<String, dynamic>> items) {
     final random = Random();
     final trending = List<Map<String, dynamic>>.from(items)..shuffle(random);
@@ -270,6 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Section for hot deals
   Widget hotDealsSection(List<Map<String, dynamic>> items) {
     final random = Random();
     final hotDeals = List<Map<String, dynamic>>.from(items)..shuffle(random);
@@ -283,6 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Main body builder for the home screen
   Widget _getBody() {
     switch (_selectedIndex) {
       case 0:
@@ -308,11 +338,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Gets the user ID from shared preferences
   Future<int?> _getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('user_id');
   }
 
+  /// Builds the main home body with all sections
   Widget _buildHomeBody() {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
     final backgroundModel = Provider.of<Backgroundmodel>(context);
@@ -628,6 +660,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Section title widget
   Widget sectionTitle(String title) {
     return Column(
       children: [
@@ -638,6 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Section title with action (e.g., 'See all >')
   Widget sectionTitleWithAction(String title, String actionText) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -649,6 +683,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Grid of categories (shows 4 random categories)
   Widget categoryGrid() {
     // Shuffle and take only 4 categories
     final List<Map<String, dynamic>> shuffled =
@@ -728,6 +763,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// =================== PRODUCT ITEM WIDGET ===================
+/// Widget for displaying a single product in a horizontal list
 class ProductItem extends StatelessWidget {
   final Widget imageWidget;
   final String name;
@@ -776,6 +813,8 @@ class ProductItem extends StatelessWidget {
   }
 }
 
+// =================== CATEGORY ITEM WIDGET ===================
+/// Widget for displaying a single category in the grid
 class CategoryItem extends StatelessWidget {
   final String title;
   final String imagePath;
@@ -813,6 +852,8 @@ class CategoryItem extends StatelessWidget {
   }
 }
 
+// =================== RECOMMENDED PRODUCT ITEM WIDGET ===================
+/// Widget for displaying a recommended product in the grid
 class RecommendedProductItem extends StatelessWidget {
   final String imagePath;
   final String price;
@@ -869,3 +910,4 @@ class RecommendedProductItem extends StatelessWidget {
     );
   }
 }
+// =================== END HOMESCREEN ===================

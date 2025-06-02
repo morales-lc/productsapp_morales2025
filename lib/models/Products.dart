@@ -1,3 +1,8 @@
+// =================== PRODUCT MODEL ===================
+/// Product
+///
+/// Data model representing a product as fetched from the backend.
+/// Includes id, name, description, price, category, user, and optional image path.
 class Product {
   final int id;
   final String name;
@@ -29,3 +34,4 @@ class Product {
     );
   }
 }
+// =================== END PRODUCT MODEL ===================

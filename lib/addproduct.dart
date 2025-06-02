@@ -10,24 +10,19 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'config.dart';
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _AddProductScreenState createState() => _AddProductScreenState();
-}
-
-// =================== SERVICES ===================
-// add new product service
+// =================== ADD PRODUCT SERVICE ===================
+/// Service for adding a new product to the backend API.
+/// Handles multipart requests for product data and optional image upload.
 class AddProductService {
+  /// Adds a new product to the backend.
+  /// Throws an exception if the request fails.
   static Future<bool> addProduct({
     required String name,
     required String description,
     required String price,
     required int categoryId,
     required int userId,
-    File? image, // 👈 optional image file
+    File? image, // Optional image file
   }) async {
     final url = Uri.parse('${AppConfig.baseUrl}/api/products');
     var request = http.MultipartRequest('POST', url);
@@ -49,20 +44,37 @@ class AddProductService {
     }
   }
 }
+// =================== END ADD PRODUCT SERVICE ===================
+
 // =================== ADD PRODUCT SCREEN ===================
+/// Screen for adding a new product. Allows user to input product details and upload an image.
+/// Fetches categories from the API and provides a form for product entry.
+class AddProductScreen extends StatefulWidget {
+  const AddProductScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _AddProductScreenState createState() => _AddProductScreenState();
+}
 
 class _AddProductScreenState extends State<AddProductScreen> {
+  // Currently selected category ID
   String? selectedCategory;
+  // Controllers for product form fields
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController productDescriptionController =
       TextEditingController();
   final TextEditingController priceController = TextEditingController();
 
+  // List of categories fetched from the API
   List<Map<String, dynamic>> categories = [];
+  // Loading state for categories
   bool isLoadingCategories = true;
 
+  // Selected image file
   File? _image;
 
+  /// Picks an image from the gallery
   Future<void> _pickImage() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked != null) {
@@ -80,6 +92,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     loadCategories();
   }
 
+  /// Loads categories from the API
   void loadCategories() async {
     try {
       categories = await CategoryService.getCategories();
@@ -369,3 +382,4 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 }
+// =================== END ADD PRODUCT SCREEN ===================

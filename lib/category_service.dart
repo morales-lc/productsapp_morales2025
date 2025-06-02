@@ -2,7 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'config.dart';
 
+// =================== CATEGORY SERVICE ===================
+/// Service for fetching product categories from the backend API.
+/// Used by AddProductScreen and HomeScreen to populate category lists.
 class CategoryService {
+  /// Fetches all categories from the backend API.
+  /// Returns a list of category maps with 'id' and 'name'.
   static Future<List<Map<String, dynamic>>> getCategories() async {
     final url = Uri.parse('${AppConfig.baseUrl}/api/categories');
 
@@ -29,3 +34,4 @@ class CategoryService {
     }
   }
 }
+// =================== END CATEGORY SERVICE ===================

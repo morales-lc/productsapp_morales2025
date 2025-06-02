@@ -8,6 +8,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 
+// =================== LOGIN SCREEN ===================
+/// Login screen for the products app.
+/// Handles user authentication, input validation, and navigation to the home screen.
+/// Uses Provider for theme and language, and manages state for login form fields.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,8 +20,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Controls password visibility
   bool _obscurePassword = true;
 
+  // Controllers for login form fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -25,19 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    //_testConnection(); // Uncomment this line to test the connection
+    // Uncomment to test API connection
+    // _testConnection();
   }
-
-  // Uncomment this method to test the connection
-  // void _testConnection() async {
-  //   try {
-  //     final response = await http.get(Uri.parse(AppConfig.baseUrl));
-  //     debugPrint('Status: ${response.statusCode}');
-  //     debugPrint('Body: ${response.body}');
-  //   } catch (e) {
-  //     debugPrint('Connection failed: $e');
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -47,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ==================== BUILD ====================
+  // =================== BUILD ===================
   @override
   Widget build(BuildContext context) {
     final isFilipino = Provider.of<LanguageModel>(context).isFilipino();
@@ -330,3 +326,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+// =================== END LOGIN SCREEN ===================
